@@ -7,5 +7,5 @@ from .models import Profile
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def ensure_profile(sender, instance, created, **kwargs):
-    if created:
+    if created and not kwargs.get("raw"):  # fixtures bring their own profile
         Profile.objects.get_or_create(user=instance)

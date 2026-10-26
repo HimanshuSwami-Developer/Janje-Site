@@ -7,6 +7,8 @@ the defaults below are for local development only.
 import os
 from pathlib import Path
 
+import dj_database_url
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -82,12 +84,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "janje.wsgi.application"
 
+# DATABASE_URL (e.g. Neon Postgres) when set, otherwise the local SQLite file.
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}", conn_max_age=60, conn_health_checks=True,
+    )
 }
+if DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
+    # Neon's "-pooler" host runs PgBouncer in transaction mode, which can't hold server-side cursors.
+    DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -114,6 +119,19 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Uploaded images go to Cloudinary when it's configured, otherwise to MEDIA_ROOT on disk.
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
+CLOUDINARY_ENABLED = bool(os.environ.get("CLOUDINARY_URL")) or all(
+    os.environ.get(f"CLOUDINARY_{part}") for part in ("CLOUD_NAME", "API_KEY", "API_SECRET")
+)
+if CLOUDINARY_ENABLED:
+    STORAGES["default"]["BACKEND"] = "cloudinary_storage.storage.MediaCloudinaryStorage"
+    # e.g. janje/products/bouquet.jpg in the Cloudinary media library
+    CLOUDINARY_STORAGE = {"PREFIX": os.environ.get("CLOUDINARY_FOLDER", "janje").strip("/") + "/"}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
