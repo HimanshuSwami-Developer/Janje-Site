@@ -1,0 +1,16 @@
+{% load studio_tags %}
+<section aria-label="About Janjé" class="max-w-[1100px] mx-auto px-4 sm:px-6 pt-[72px] flex flex-wrap items-center gap-8">
+{% with about=bestsellers.1|default:bestsellers.0 %}{% if about %}
+<img alt="" class="flex-[0_1_340px] w-full max-w-[340px] aspect-square object-cover rounded-full mx-auto shadow-[0_16px_40px_rgba(180,72,95,0.16)]" loading="lazy" src="{{ about.image_src }}"/>
+{% endif %}{% endwith %}
+<div class="flex-[1_1_340px] flex flex-col gap-3">
+<h2 class="m-0 font-hand text-[42px] sm:text-[52px] font-bold leading-none">{% txt "home.about.title" "We’re so happy you’re here" %}</h2>
+<p class="m-0 text-[17px] leading-relaxed text-cocoa-soft">{% txt "home.about.text" "Janjé is a little shop of pretty little things for every day. Every flower is shaped by hand, one fluffy petal at a time." %}</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-blush px-3.5 py-2 rounded-full font-bold text-sm">{% txt "home.about.tag1" "Handmade" %}</span>
+<span class="bg-lilac px-3.5 py-2 rounded-full font-bold text-sm">{% txt "home.about.tag2" "Lightweight & comfy" %}</span>
+<span class="bg-sky px-3.5 py-2 rounded-full font-bold text-sm">{% txt "home.about.tag3" "Perfect for gifting" %}</span>
+</div>
+<a class="font-extrabold text-sm" href="{% url 'shop:our_story' %}">{% txt "home.about.link" "Read our story →" %}</a>
+</div>
+</section>

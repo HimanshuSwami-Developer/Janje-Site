@@ -1,0 +1,36 @@
+{% extends "studio/base.html" %}{% load shop_tags %}
+{% block title %}Orders{% endblock %}
+{% block heading %}Orders{% endblock %}
+{% block actions %}
+<form class="flex gap-2" method="get">
+{% if status %}<input name="status" type="hidden" value="{{ status }}"/>{% endif %}
+<label class="sr-only" for="q">Search orders</label>
+<input class="st-search" id="q" name="q" placeholder="Order no., name or phone…" type="search" value="{{ query }}"/>
+</form>
+{% endblock %}
+{% block content %}
+<div class="st-chips mb-4">
+<a class="st-chip {% if not status %}is-on{% endif %}" href="?">All</a>
+{% for value, label in statuses %}<a class="st-chip {% if status == value %}is-on{% endif %}" href="?status={{ value }}">{{ label }}</a>{% endfor %}
+</div>
+<div class="st-card !p-0 st-scroll">
+<table class="st-table">
+<thead><tr><th>Order</th><th>Placed</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead>
+<tbody>
+{% for o in orders %}
+<tr>
+<td><a class="font-semibold" href="{% url 'studio:order' o.pk %}">{{ o.number }}</a></td>
+<td class="whitespace-nowrap">{{ o.created_at|date:"j M Y, g:i A" }}</td>
+<td>{{ o.recipient_name }}<div class="text-xs text-stone-500">{{ o.city }} · {{ o.phone }}</div></td>
+<td>{{ o.item_count }}</td>
+<td class="font-semibold">{{ o.total|rupees }}</td>
+<td>{% if o.is_paid %}<span class="st-badge ok">Paid</span>{% elif o.payment_method == "cod" %}<span class="st-badge">Cash on delivery</span>{% else %}<span class="st-badge warn">Awaiting UPI</span>{% endif %}</td>
+<td><span class="st-badge pink">{{ o.get_status_display }}</span></td>
+</tr>
+{% empty %}
+<tr><td class="text-stone-500 !py-8 text-center" colspan="7">No orders match.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endblock %}

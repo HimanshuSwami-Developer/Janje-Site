@@ -1,0 +1,9 @@
+<div class="js-formset" data-prefix="{{ fs.prefix }}">
+{{ fs.management_form }}
+{% for error in fs.non_form_errors %}<p class="sf-err">{{ error }}</p>{% endfor %}
+<div class="js-rows">
+{% for f in fs %}{% include "studio/_inline_row.html" %}{% endfor %}
+</div>
+<template class="js-empty">{% include "studio/_inline_row.html" with f=fs.empty_form %}</template>
+<button class="st-btn st-btn-sm mt-2 js-add-row" type="button">+ {{ add_label }}</button>
+</div>

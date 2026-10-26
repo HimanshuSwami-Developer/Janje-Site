@@ -1,0 +1,151 @@
+{% extends "base.html" %}{% load studio_tags shop_tags %}
+{% block title %}{{ product.name }} | Janjé{% endblock %}
+{% block meta_description %}{{ product.short_description|default:product.name }}{% endblock %}
+{% block content %}
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 pt-4 sm:pt-5 pb-16 pad-bar">
+<nav aria-label="Breadcrumb" class="hide-sm text-sm text-cocoa-soft pb-5"><a class="text-cocoa-soft" href="{% url 'shop:home' %}">Home</a> / <a class="text-cocoa-soft" href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a> / <span class="text-cocoa font-bold">{{ product.name }}</span></nav>
+
+<div class="flex flex-wrap gap-10 items-start">
+<!-- Gallery -->
+<div class="flex-[1_1_420px] min-w-0 flex flex-col gap-3.5 relative">
+<img alt="{{ product.name }}" class="w-full aspect-square object-cover rounded-[28px] border-[6px] border-white bg-blush shadow-[0_16px_40px_rgba(180,72,95,0.14)]" id="main-product-img" src="{{ product.image_src }}"/>
+<span class="absolute top-5 left-5 bg-butter px-3 py-[5px] font-hand text-[21px] font-bold -rotate-[4deg]">{% if not product.in_stock %}Sold out for now{% else %}{{ product.sticker|default:product.badge|default:"Handmade with love" }}{% endif %}</span>
+{% include "partials/bow.html" with cls="absolute -top-3.5 right-4 w-[68px] h-11" %}
+{% if product.images.all %}
+<div class="hscroll grid grid-flow-col auto-cols-[minmax(64px,1fr)] gap-2.5">
+<button aria-label="Show main photo" aria-pressed="true" class="js-thumb snap p-0 border-[3px] border-berry rounded-[14px] bg-white overflow-hidden aspect-square min-w-[64px]" data-src="{{ product.image_src }}" type="button"><img alt="" class="w-full h-full object-cover" src="{{ product.image_src }}"/></button>
+{% for img in product.images.all %}
+<button aria-label="Show {{ img.label|default:'photo' }}" aria-pressed="false" class="js-thumb snap p-0 border-[3px] border-white rounded-[14px] bg-white overflow-hidden aspect-square min-w-[64px]" data-src="{{ img.image_src }}" type="button"><img alt="" class="w-full h-full object-cover" loading="lazy" src="{{ img.image_src }}"/></button>
+{% endfor %}
+</div>
+{% endif %}
+</div>
+
+<!-- Details -->
+<form class="flex-[1_1_380px] min-w-0 flex flex-col gap-5" id="pdp-form">
+<input name="product_id" type="hidden" value="{{ product.pk }}"/>
+<input id="size-input" name="size_id" type="hidden" value="{{ default_size.pk|default:'' }}"/>
+<input id="color-input" name="color_id" type="hidden" value="{{ colors.0.pk|default:'' }}"/>
+<input id="qty-input" name="qty" type="hidden" value="1"/>
+
+{% if cms_edit %}<a class="cms-edit-link static self-start" href="{% url 'studio:edit' 'products' product.pk %}">Edit this product’s name, photos, prices &amp; options</a>{% endif %}
+<div class="flex flex-col gap-1.5">
+<span class="text-[13px] font-extrabold text-berry tracking-[0.08em] uppercase">{{ product.category.name }}</span>
+<h1 class="m-0 font-hand text-[44px] sm:text-[64px] leading-[0.95] font-bold">{{ product.name }}</h1>
+<div class="flex flex-wrap items-baseline gap-2.5">
+<span class="text-2xl font-extrabold" id="price-display">{{ price|rupees }}</span>
+<s class="text-base font-bold text-cocoa-soft {% if not save_percent %}hidden{% endif %}" id="regular-price-display">{{ compare_price|rupees }}</s>
+<span class="bg-blush px-2.5 py-0.5 rounded-full text-xs font-extrabold text-berry {% if not save_percent %}hidden{% endif %}" id="save-badge">Save {{ save_percent }}%</span>
+</div>
+{% if product.review_count %}<a class="text-sm font-bold text-cocoa-soft" href="#reviews-section"><span class="text-berry">★</span> {{ product.rating }} · {{ product.review_count }} love note{{ product.review_count|pluralize }}</a>{% endif %}
+</div>
+<p class="m-0 text-base leading-relaxed text-cocoa-soft">{{ product.description|default:product.short_description }}</p>
+
+{% if sizes %}
+<fieldset class="m-0 p-0 border-0 flex flex-col gap-2.5">
+<legend class="font-extrabold mb-2.5">Size: <span class="font-semibold text-cocoa-soft" id="selected-size-name">{{ default_size.name }}</span></legend>
+<div class="flex flex-wrap gap-2">
+{% for size in sizes %}
+<button aria-pressed="{% if size == default_size %}true{% else %}false{% endif %}" class="js-size opt {% if size == default_size %}is-on{% endif %}" data-compare="{{ size.compare_at_price|default:size.price }}" data-name="{{ size.name }}" data-price="{{ size.price }}" data-size-id="{{ size.pk }}" type="button">{{ size.name }} · {{ size.price|rupees }}</button>
+{% endfor %}
+</div>
+</fieldset>
+{% endif %}
+
+{% if colors %}
+<fieldset class="m-0 p-0 border-0 flex flex-col gap-2.5">
+<legend class="font-extrabold mb-2.5">Style: <span class="font-semibold text-cocoa-soft" id="selected-color-name">{{ colors.0.name }}</span></legend>
+<div class="flex flex-wrap gap-2">
+{% for color in colors %}
+<button aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" class="js-color opt pl-1.5 {% if forloop.first %}is-on{% endif %}" data-color-id="{{ color.pk }}" data-label="{{ color.name }}" type="button"><span class="dot ml-0" style="background: {{ color.hex }}"></span>{{ color.name }}</button>
+{% endfor %}
+</div>
+</fieldset>
+{% endif %}
+
+<div class="flex flex-wrap items-center gap-3.5">
+<div class="qty">
+<button aria-label="Decrease quantity" class="js-qty" data-delta="-1" type="button">−</button>
+<output aria-live="polite" class="text-lg" id="qty-val">1</output>
+<button aria-label="Increase quantity" class="js-qty" data-delta="1" type="button">+</button>
+</div>
+<button class="js-add-to-bag btn btn-berry btn-lg flex-[1_1_180px] hide-sm" {% if not product.in_stock %}disabled{% endif %} type="submit">{% if product.in_stock %}Add to cart{% else %}Sold out{% endif %}</button>
+</div>
+<div class="flex flex-wrap gap-2.5">
+<a class="btn btn-ghost flex-1" href="{{ instagram_url }}" rel="noopener" target="_blank">{% txt "product.dm" "DM to order or customise" %}</a>
+<button aria-label="Save to wishlist" class="js-wishlist btn bg-white text-berry border-2 border-blush-line {% if product.pk in wishlist_ids %}is-wished{% endif %}" data-product-id="{{ product.pk }}" type="button"><span aria-hidden="true" class="heart">♡</span> Save</button>
+</div>
+
+<div class="flex flex-wrap gap-2">
+<span class="bg-blush px-3.5 py-2 rounded-full font-bold text-sm">{% txt "product.tag1" "Handmade" %}</span>
+<span class="bg-lilac px-3.5 py-2 rounded-full font-bold text-sm">{% txt "product.tag2" "Never wilts" %}</span>
+<span class="bg-sky px-3.5 py-2 rounded-full font-bold text-sm">{% txt "product.tag3" "Gift ready" %}</span>
+</div>
+<div class="bg-butter rounded-2xl px-[18px] py-3.5 flex items-center gap-3 -rotate-[0.5deg]">
+<svg aria-hidden="true" fill="none" height="24" stroke="#4A2C26" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>
+<span class="font-bold text-[15px]">{% if not product.in_stock %}Sold out. DM us to pre-order{% elif product.stock <= 10 %}Only {{ product.stock }} left · ships in 24–48h across Delhi NCR{% else %}{% txt "product.shipping" "Ships in 24–48h across Delhi NCR · 3–5 days pan-India" %}{% endif %}</span>
+</div>
+</form>
+</div>
+
+{% if related %}
+<section class="pt-16 flex flex-col gap-[18px]">
+<h2 class="m-0 font-hand text-[34px] sm:text-[44px] font-bold">{% txt "product.pairs" "Pairs well with" %}</h2>
+<div class="hscroll grid grid-flow-col auto-cols-[minmax(150px,46%)] sm:grid-flow-row sm:grid-cols-4 gap-4 pb-1.5">
+{% for p in related %}
+<a class="lift snap bg-white rounded-[22px] p-2.5 flex flex-col gap-2 no-underline text-cocoa shadow-[0_10px_28px_rgba(180,72,95,0.10)]" href="{{ p.get_absolute_url }}">
+<img alt="{{ p.name }}" class="w-full aspect-square object-cover rounded-[14px] bg-blush" loading="lazy" src="{{ p.image_src }}"/>
+<span class="font-hand text-2xl font-bold px-1 leading-none">{{ p.name }}</span>
+<span class="text-sm font-bold text-cocoa-soft px-1 pb-1">{{ p.price|rupees }}</span>
+</a>
+{% endfor %}
+</div>
+</section>
+{% endif %}
+
+<!-- Reviews -->
+<section class="pt-16 flex flex-col gap-6" id="reviews-section">
+<div class="flex flex-wrap items-end justify-between gap-3">
+<div class="flex flex-col gap-1">
+<h2 class="m-0 font-hand text-[34px] sm:text-[44px] font-bold leading-none">{% txt "product.reviews" "Love notes" %}</h2>
+<span class="text-[15px] text-cocoa-soft">{% if review_total %}{{ review_total }} note{{ review_total|pluralize }} from customers{% else %}No notes yet{% endif %}</span>
+</div>
+{% if user.is_authenticated %}
+<button class="js-write-review btn btn-ghost text-sm" type="button">Write a love note</button>
+{% else %}
+<a class="btn btn-ghost text-sm" href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}">Sign in to write one</a>
+{% endif %}
+</div>
+{% if user.is_authenticated %}
+<form action="{% url 'shop:review_create' product.slug %}" class="js-review-form hidden bg-white rounded-[22px] p-5 grid grid-cols-1 md:grid-cols-3 gap-4 shadow-[0_8px_24px_rgba(180,72,95,0.08)]" method="post">
+{% csrf_token %}
+<label class="field">Rating<select name="rating">{% for v in "54321" %}<option value="{{ v }}">{{ v }} ★</option>{% endfor %}</select></label>
+<label class="field md:col-span-2">Where are you from? <input maxlength="60" name="location" placeholder="e.g. Gurgaon" type="text"/></label>
+<label class="field md:col-span-3">Your note<textarea name="text" placeholder="How did it make you (or them) smile?" required rows="3"></textarea></label>
+<button class="btn btn-berry md:col-span-3 justify-self-start" type="submit">Post my note</button>
+</form>
+{% endif %}
+{% if reviews %}
+<div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-7 px-1.5">
+{% for review in reviews %}
+<figure class="m-0 {% cycle 'bg-blush -rotate-[1.5deg]' 'bg-butter rotate-[1.2deg]' 'bg-lilac -rotate-[0.8deg]' %} pt-7 px-[22px] pb-[22px] rounded-lg flex flex-col gap-2.5 relative shadow-[0_8px_20px_rgba(74,44,38,0.08)]">
+<span aria-hidden="true" class="tape -translate-x-1/2 rotate-3"></span>
+<span aria-label="{{ review.rating }} out of 5" class="text-berry text-lg tracking-[2px]">{{ review.stars }}</span>
+<blockquote class="m-0 font-hand text-[25px] leading-tight">{{ review.text }}</blockquote>
+<figcaption class="font-extrabold text-sm">— {{ review.name }}{% if review.location %}, {{ review.location }}{% endif %}{% if review.is_verified %} · <span class="text-tertiary">Verified buyer</span>{% endif %}</figcaption>
+</figure>
+{% endfor %}
+</div>
+{% endif %}
+</section>
+</div>
+
+<div class="mbar">
+<div class="flex flex-col flex-none min-w-0">
+<span class="text-xs text-cocoa-soft font-bold truncate max-w-[150px]"><span id="mbar-qty">1</span> × {{ product.name }}</span>
+<span class="font-extrabold text-lg" id="mbar-price">{{ price|rupees }}</span>
+</div>
+<button class="js-add-to-bag btn btn-berry flex-1" form="pdp-form" {% if not product.in_stock %}disabled{% endif %} type="submit">{% if product.in_stock %}Add to cart{% else %}Sold out{% endif %}</button>
+</div>
+{{ pdp_data|json_script:"pdp-data" }}
+{% endblock %}

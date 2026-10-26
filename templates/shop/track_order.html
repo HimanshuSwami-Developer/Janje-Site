@@ -1,0 +1,20 @@
+{% extends "accounts/_auth_shell.html" %}
+{% block title %}Track Your Order | Janjé - Blush &amp; Bow{% endblock %}
+{% block auth_icon %}local_shipping{% endblock %}
+{% block auth_title %}Track your order ♡{% endblock %}
+{% block auth_subtitle %}Enter your order number and the email or phone you used at checkout{% endblock %}
+{% block auth_form %}
+{% if throttled %}<div class="mb-4 p-3 rounded-lg bg-error-container text-on-error-container font-body-sm text-body-sm">Too many tries. Please wait a few minutes, or <a class="font-bold underline" href="{{ whatsapp_url }}" rel="noopener" target="_blank">WhatsApp us</a> with your order number.</div>{% endif %}
+<form class="space-y-4" method="post">
+{% csrf_token %}
+{% include "accounts/_input.html" with name="number" label="Order number" placeholder="JJ-12345" field=form.number autocomplete="off" %}
+{% include "accounts/_input.html" with name="contact" label="Email or phone" placeholder="you@domain.com or 98100 00000" field=form.contact autocomplete="email" %}
+<button class="w-full py-3.5 rounded-full bg-primary hover:bg-on-primary-container text-on-primary font-label-lg text-label-lg font-bold shadow-[0_10px_24px_rgba(164,48,115,0.28)] transition-all hover:scale-[1.01]" type="submit">Find my order</button>
+</form>
+<p class="text-center font-body-sm text-body-sm text-on-surface-variant mt-6">Your order number is in your confirmation email.</p>
+{% if user.is_authenticated %}
+<p class="text-center font-body-sm text-body-sm text-on-surface-variant mt-2">Signed in? See everything in <a class="text-primary font-bold hover:underline" href="{% url 'accounts:account' %}#orders">My orders</a></p>
+{% else %}
+<p class="text-center font-body-sm text-body-sm text-on-surface-variant mt-2">Have an account? <a class="text-primary font-bold hover:underline" href="{% url 'accounts:login' %}">Sign in</a> to see all your orders</p>
+{% endif %}
+{% endblock %}

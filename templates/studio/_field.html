@@ -1,0 +1,13 @@
+{% if field.is_hidden %}{{ field }}{% else %}
+<div class="sf-field{% if field.widget_type == 'checkbox' %} sf-check{% endif %}{% if field.errors %} has-err{% endif %} {{ extra_class }}">
+{% if field.widget_type == 'checkbox' %}
+<label class="sf-switch">{{ field }}<span class="sf-switch-ui" aria-hidden="true"></span><span>{{ field.label }}</span></label>
+{% else %}
+<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="sf-req">*</span>{% endif %}</label>
+{% if field.widget_type == 'clearablefile' and field.value %}<img alt="" class="sf-preview" src="{{ field.value.url }}"/>{% endif %}
+{{ field }}
+{% endif %}
+{% if field.help_text %}<p class="sf-help">{{ field.help_text }}</p>{% endif %}
+{% for error in field.errors %}<p class="sf-err">{{ error }}</p>{% endfor %}
+</div>
+{% endif %}

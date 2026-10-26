@@ -1,0 +1,35 @@
+{% load studio_tags %}{% url 'shop:home' as home_url %}{% url 'shop:product_list' as shop_url %}{% url 'shop:cart' as cart_url %}
+{% if site.show_announcement %}<div class="bg-berry text-white text-center px-4 py-2.5 text-[13px] font-bold tracking-[0.02em]">{% txt "global.announcement" "First drop is live · Launch prices · Free delivery over ₹499" %}</div>{% endif %}
+<header class="sticky top-0 z-30 bg-cream/95 border-b-2 border-dashed border-blush-line">
+<div class="max-w-[1200px] mx-auto px-5 py-2.5 flex items-center justify-between gap-3">
+<a class="flex items-center gap-1.5 no-underline text-berry font-script text-[34px] font-bold leading-none" href="{{ home_url }}">{% txt "global.logo" "Janjé" %}{% include "partials/bow.html" with cls="w-7 h-[18px]" knot_only=1 %}</a>
+<nav aria-label="Main" class="hidden md:flex gap-1">
+<a class="nav-link {% if request.path == home_url %}is-active{% endif %}" href="{{ home_url }}">{% txt "global.nav.home" "Home" %}</a>
+<a class="nav-link {% if '/shop/' in request.path or '/product/' in request.path %}is-active{% endif %}" href="{{ shop_url }}">{% txt "global.nav.shop" "Shop" %}</a>
+<a class="nav-link" href="{{ home_url }}#reels">{% txt "global.nav.reels" "Reels" %}</a>
+<a class="nav-link" href="{{ home_url }}#reviews">{% txt "global.nav.reviews" "Love notes" %}</a>
+</nav>
+<div class="flex items-center gap-2">
+<a aria-label="{% if user.is_authenticated %}My account{% else %}Sign in{% endif %}" class="hidden sm:inline-flex w-[46px] h-[46px] rounded-full bg-blush items-center justify-center text-cocoa" href="{% if user.is_authenticated %}{% url 'accounts:account' %}{% else %}{% url 'accounts:login' %}{% endif %}">
+<svg aria-hidden="true" fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="22"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>
+</a>
+<a aria-label="Cart, {{ bag_count }} items" class="relative w-[46px] h-[46px] rounded-full inline-flex items-center justify-center {% if request.path == cart_url %}bg-berry text-white{% else %}bg-blush text-cocoa{% endif %}" href="{{ cart_url }}">
+<svg aria-hidden="true" fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="22"><path d="M5 8h14l-1 12H6z"></path><path d="M9 8a3 3 0 0 1 6 0"></path></svg>
+<span class="absolute -top-[3px] -right-[3px] min-w-[20px] h-5 px-[5px] rounded-full {% if request.path == cart_url %}bg-cocoa{% else %}bg-berry{% endif %} text-white text-xs font-extrabold flex items-center justify-center" id="bag-count">{{ bag_count }}</span>
+</a>
+<button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu" class="js-menu md:hidden w-[46px] h-[46px] rounded-full bg-blush text-cocoa inline-flex items-center justify-center" type="button">
+<svg aria-hidden="true" class="js-menu-open" fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" width="22"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+<svg aria-hidden="true" class="js-menu-close hidden" fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" width="22"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</button>
+</div>
+</div>
+<nav aria-label="Mobile" class="hidden md:hidden flex-col gap-1 px-4 pt-1 pb-[18px] border-t border-blush" id="mobile-nav">
+<a class="nav-link py-3.5" href="{{ home_url }}">{% txt "global.nav.home" "Home" %}</a>
+<a class="nav-link py-3.5" href="{{ shop_url }}">{% txt "global.nav.shop" "Shop" %}</a>
+<a class="nav-link py-3.5" href="{{ home_url }}#reels">{% txt "global.nav.reels" "Reels" %}</a>
+<a class="nav-link py-3.5" href="{{ home_url }}#reviews">{% txt "global.nav.reviews" "Love notes" %}</a>
+<a class="nav-link py-3.5" href="{% url 'shop:track_order' %}">Track order</a>
+<a class="nav-link py-3.5" href="{% if user.is_authenticated %}{% url 'accounts:account' %}{% else %}{% url 'accounts:login' %}{% endif %}">{% if user.is_authenticated %}My account{% else %}Sign in{% endif %}</a>
+<a class="btn btn-berry mt-2" href="{{ instagram_url }}" rel="noopener" target="_blank">{% txt "global.nav.dm" "DM to order" %}</a>
+</nav>
+</header>

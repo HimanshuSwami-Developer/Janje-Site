@@ -1,0 +1,17 @@
+{% extends "accounts/_auth_shell.html" %}
+{% block title %}Join the Bow Club | Janjé - Blush &amp; Bow{% endblock %}
+{% block auth_icon %}celebration{% endblock %}
+{% block auth_title %}Join the Bow Club 🎀{% endblock %}
+{% block auth_subtitle %}Save addresses &amp; gift notes, track orders and earn Blossoms{% endblock %}
+{% block auth_form %}
+<form class="space-y-4" method="post">
+{% csrf_token %}
+<input name="next" type="hidden" value="{{ next }}"/>
+{% include "accounts/_input.html" with name="full_name" label="Full name" placeholder="e.g. Sanvi Verma" field=form.full_name autocomplete="name" %}
+{% include "accounts/_input.html" with name="email" label="Email" type="email" placeholder="you@domain.com" field=form.email autocomplete="email" %}
+{% include "accounts/_input.html" with name="phone" label="Mobile number" type="tel" placeholder="10-digit number" field=form.phone autocomplete="tel-national" %}
+{% include "accounts/_input.html" with name="password" label="Password" type="password" placeholder="At least 8 characters" field=form.password autocomplete="new-password" %}
+<button class="w-full py-3.5 rounded-full bg-primary hover:bg-on-primary-container text-on-primary font-label-lg text-label-lg font-bold shadow-[0_10px_24px_rgba(164,48,115,0.28)] transition-all hover:scale-[1.01]" type="submit">Create My Account</button>
+</form>
+<p class="text-center font-body-sm text-body-sm text-on-surface-variant mt-6">Already a member? <a class="text-primary font-bold hover:underline" href="{% url 'accounts:login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Sign in</a></p>
+{% endblock %}

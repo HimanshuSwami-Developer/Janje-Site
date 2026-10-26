@@ -1,0 +1,440 @@
+{% extends "base.html" %}{% load shop_tags %}
+{% block title %}My Account | Janjé - Blush &amp; Bow{% endblock %}
+{% block content %}
+<div class="flex flex-col w-full">
+<!-- Top Profile & VIP Header Section -->
+<section class="w-full max-w-[1320px] mx-auto px-margin md:px-margin-md lg:px-margin-lg py-6 md:py-8">
+<!-- Atmospheric Glow Pill Container -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-6 md:p-10 shadow-[0_16px_40px_rgba(244,114,182,0.12)]">
+<!-- Decorative Whimsical Backdrop Shapes -->
+<div class="absolute -top-12 -right-12 w-64 h-64 rounded-full bg-primary-fixed/30 blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-16 -left-16 w-72 h-72 rounded-full bg-secondary-fixed/40 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+<!-- Customer Identity Info -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+<div class="relative">
+<div class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-tr from-primary-fixed via-primary-container/40 to-primary-fixed-dim p-1 shadow-[0_8px_20px_rgba(164,48,115,0.2)]">
+<div class="w-full h-full rounded-full bg-surface-container-lowest flex items-center justify-center text-primary overflow-hidden">
+<span class="font-headline-lg text-headline-lg text-primary font-bold">{{ initials }}</span>
+</div>
+</div>
+<!-- Little Bow Ribbon Floating Sticker -->
+<div class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md animate-bounce" style="animation-duration: 3s;">
+<span class="material-symbols-outlined text-[16px]">favorite</span>
+</div>
+</div>
+<div class="space-y-1.5">
+<div class="flex flex-wrap items-center gap-2.5">
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-semibold tracking-tight">{{ user.get_full_name|default:user.email }}</h1>
+<span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-md text-label-md shadow-sm">
+<span>🎀</span>
+<span class="font-bold tracking-wide">Bow Club • {{ tier }}</span>
+</span>
+</div>
+<div class="flex flex-wrap items-center gap-3 text-on-surface-variant font-body-sm text-body-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">mail</span>
+                {{ user.email }}
+              </span>
+{% if profile.phone %}<span class="text-outline-variant">•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">call</span>
+                +91 {{ profile.phone }}
+              </span>{% endif %}
+<span class="text-outline-variant">•</span>
+<span class="flex items-center gap-1 text-tertiary font-medium">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+                Member since {{ user.date_joined|date:'M Y' }}
+              </span>
+</div>
+</div>
+</div>
+<!-- Quick Summary Stats Bento / Pills -->
+<div class="grid grid-cols-3 gap-3 md:gap-4 sm:flex sm:items-center sm:justify-end">
+<div class="flex flex-col items-center justify-center p-3.5 md:p-4 rounded-lg bg-surface-container-low/80 text-center min-w-[100px] shadow-sm hover:scale-105 transition-transform duration-200">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Keepsakes</span>
+<span class="font-headline-md text-headline-md text-primary font-bold mt-0.5">{{ keepsakes }}</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Handcrafted</span>
+</div>
+<div class="flex flex-col items-center justify-center p-3.5 md:p-4 rounded-lg bg-primary-fixed/40 text-center min-w-[100px] shadow-sm hover:scale-105 transition-transform duration-200">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider font-semibold">Deliveries</span>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">{{ active_count }}</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Active NCR</span>
+</div>
+<div class="flex flex-col items-center justify-center p-3.5 md:p-4 rounded-lg bg-secondary-fixed/50 text-center min-w-[120px] shadow-sm hover:scale-105 transition-transform duration-200">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-semibold">Joy Shared</span>
+<span class="font-headline-md text-headline-md text-on-secondary-fixed font-bold mt-0.5">{{ spent|rupees }}</span>
+<span class="font-body-sm text-body-sm text-secondary font-medium">{{ blossoms }} Blossoms</span>
+</div>
+</div>
+</div>
+<!-- Wallet & Blossom Balance Quick Ribbon -->
+<div class="mt-6 pt-5 border-t border-dashed border-outline-variant/40 flex flex-col sm:flex-row items-center justify-between gap-4 bg-surface-container-lowest/70 rounded-b-xl">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed shadow-sm">
+<span class="material-symbols-outlined text-[18px]">redeem</span>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Blossom Points: </span>
+<span class="font-title-md text-title-md text-primary font-bold">{{ blossoms }}</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-1">(1 Blossom = ₹1 — redeem via our WhatsApp concierge)</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<a class="px-4 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md transition-all flex items-center gap-1.5" href="#settings">
+<span class="material-symbols-outlined text-[16px]">settings</span>
+<span>Edit Profile</span>
+</a>
+<a class="px-4 py-1.5 rounded-full bg-primary text-on-primary hover:bg-on-primary-container font-label-md text-label-md transition-all shadow-[0_4px_12px_rgba(164,48,115,0.25)] flex items-center gap-1" href="{% url 'shop:product_list' %}">
+<span class="material-symbols-outlined text-[16px]">storefront</span>
+<span>Browse New Drops</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Account Navigation Pills -->
+<section class="w-full max-w-[1320px] mx-auto px-margin md:px-margin-md lg:px-margin-lg pb-4">
+<div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+<a class="px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg font-bold shadow-md flex items-center gap-2 whitespace-nowrap" href="#orders">
+<span class="material-symbols-outlined text-[18px]">local_florist</span>
+<span>My Orders &amp; Keepsakes</span>
+{% if active_count %}<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed text-label-sm font-bold">{{ active_count }} In Progress</span>{% endif %}
+</a>
+<a class="px-5 py-2.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg transition-all flex items-center gap-2 whitespace-nowrap" href="#addresses"><span class="material-symbols-outlined text-[18px]">home_pin</span><span>Saved Gifting Addresses</span></a>
+<a class="px-5 py-2.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg transition-all flex items-center gap-2 whitespace-nowrap" href="#notes"><span class="material-symbols-outlined text-[18px]">history_edu</span><span>Calligraphy Notes Vault</span></a>
+<a class="px-5 py-2.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg transition-all flex items-center gap-2 whitespace-nowrap" href="#rewards"><span class="material-symbols-outlined text-[18px]">stars</span><span>Bow Club Rewards &amp; Perks</span></a>
+<a class="px-5 py-2.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg transition-all flex items-center gap-2 whitespace-nowrap" href="#settings"><span class="material-symbols-outlined text-[18px]">settings</span><span>Account Settings</span></a>
+</div>
+</section>
+<!-- Main 12-Column Content Grid: Orders + Side Modules -->
+<div class="w-full max-w-[1320px] mx-auto px-margin md:px-margin-md lg:px-margin-lg py-4 md:py-6 scroll-mt-40" id="orders">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: Active & Recent Order History (8 cols) -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Section Title with Scrapbook Tape Accent -->
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-3">
+<span class="w-2.5 h-7 rounded-full bg-primary-container"></span>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-semibold">Active &amp; Past Keepsakes</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Real-time artisan progress, gift calligraphy, and handcraft tracking</p>
+</div>
+</div>
+<div class="hidden sm:flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Filter by:</span>
+<a class="{% if status_filter == 'all' %}px-3 py-1 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-bold{% else %}px-3 py-1 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-label-sm text-label-sm{% endif %}" href="?status=all#orders">All ({{ order_total }})</a>
+<a class="{% if status_filter == 'active' %}px-3 py-1 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-bold{% else %}px-3 py-1 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-label-sm text-label-sm{% endif %}" href="?status=active#orders">In Atelier ({{ active_count }})</a>
+<a class="{% if status_filter == 'delivered' %}px-3 py-1 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-bold{% else %}px-3 py-1 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-label-sm text-label-sm{% endif %}" href="?status=delivered#orders">Delivered ({{ delivered_count }})</a>
+</div>
+</div>
+{% for order in orders %}
+<article class="relative rounded-xl bg-surface-container-lowest p-6 md:p-8 {% if order.is_active_order %}shadow-[0_12px_32px_rgba(244,114,182,0.12)]{% else %}shadow-[0_8px_24px_rgba(244,114,182,0.08)]{% endif %}">
+{% if order.is_active_order %}<div class="absolute -top-3 left-10 px-4 py-1 bg-primary-fixed/80 text-on-primary-fixed text-label-sm font-bold tracking-wider rounded-sm shadow-sm rotate-[-1.5deg]">
+            ✦ ATELIER WORKSHOP ✦
+          </div>{% endif %}
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 pb-5 border-b border-surface-container">
+<div>
+<div class="flex flex-wrap items-center gap-3">
+<a class="font-headline-sm text-headline-sm text-on-surface font-bold hover:text-primary transition-colors" href="{{ order.get_absolute_url }}">Order #{{ order.number }}</a>
+{% if order.status == "delivered" %}
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-bold"><span class="material-symbols-outlined text-[14px]">check</span> Delivered with Love ♡</span>
+{% elif order.status == "cancelled" %}
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-bold">Cancelled</span>
+{% else %}
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed-dim/40 text-on-primary-fixed-variant font-label-sm text-label-sm font-bold">
+<span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span></span>
+                  {{ order.get_status_display }} • Gurgaon Atelier
+                </span>
+{% endif %}
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                Placed on <strong class="text-on-surface">{{ order.created_at|date:"j M Y, h:i A" }}</strong>{% if order.is_active_order %} • Delivery ETA: <strong class="text-primary font-semibold">{{ order.estimated_delivery|date:"D, j M" }} ({{ order.get_delivery_mode_display }})</strong>{% endif %}
+</p>
+</div>
+<div class="text-left sm:text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">{% if order.is_paid %}Total Paid{% else %}Order Total{% endif %}</span>
+<div class="font-title-lg text-title-lg {% if order.is_active_order %}text-primary{% else %}text-on-surface{% endif %} font-bold">{{ order.total|rupees }}</div>
+<span class="font-label-sm text-label-sm {% if order.is_paid %}text-tertiary{% else %}text-on-surface-variant{% endif %} flex items-center sm:justify-end gap-1">
+{% if order.is_paid %}<span class="material-symbols-outlined text-[14px]">check_circle</span> {{ order.get_payment_method_display }} Paid{% elif order.payment_method == "cod" %}Pay on delivery{% else %}Awaiting UPI payment{% endif %}
+              </span>
+</div>
+</div>
+{% if order.is_active_order %}
+<div class="py-5 border-b border-surface-container">
+<div class="flex items-center justify-between text-label-sm font-bold mb-2">
+<span class="{% if order.step_index >= 0 %}text-primary{% else %}text-on-surface-variant{% endif %} flex items-center gap-1 {% if order.step_index == 0 %}font-extrabold{% endif %}"><span class="material-symbols-outlined text-[16px]">edit_note</span> <span class="hidden sm:inline">Order Accepted</span></span>
+<span class="{% if order.step_index >= 1 %}text-primary{% else %}text-on-surface-variant{% endif %} flex items-center gap-1 {% if order.step_index == 1 %}font-extrabold{% endif %}"><span class="material-symbols-outlined text-[16px]">content_cut</span> <span class="hidden sm:inline">Petal Weaving &amp; Ribbons</span></span>
+<span class="{% if order.step_index >= 2 %}text-primary{% else %}text-on-surface-variant{% endif %} flex items-center gap-1 {% if order.step_index == 2 %}font-extrabold{% endif %}"><span class="material-symbols-outlined text-[16px]">history_edu</span> <span class="hidden sm:inline">Wax Inking</span></span>
+<span class="{% if order.step_index >= 3 %}text-primary{% else %}text-on-surface-variant{% endif %} flex items-center gap-1 {% if order.step_index == 3 %}font-extrabold{% endif %}"><span class="material-symbols-outlined text-[16px]">local_shipping</span> <span class="hidden sm:inline">Delivery Van</span></span>
+</div>
+<div class="w-full h-2.5 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full rounded-full bg-gradient-to-r from-primary via-primary-container to-primary-fixed-dim transition-all duration-500" style="width: {{ order.progress_percent }}%;"></div>
+</div>
+<div class="flex items-center justify-between mt-2 text-body-sm text-on-surface-variant gap-3">
+<span>{{ order.status_note|default:"Our artisans are lovingly crafting your keepsake ♡" }}</span>
+<span class="text-primary font-semibold whitespace-nowrap">ETA {{ order.estimated_delivery|date:"j M" }}</span>
+</div>
+</div>
+{% endif %}
+<div class="py-5 space-y-4">
+{% for item in order.items.all %}
+{% if item.is_addon %}
+<div class="flex items-center gap-4 pl-3 py-2 rounded-lg bg-surface-container-low/60">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary flex-shrink-0"><span class="material-symbols-outlined text-[18px]">{{ item.icon|default:"spa" }}</span></div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2"><span class="font-title-md text-body-md text-on-surface font-medium truncate">{{ item.name }}{% if item.quantity > 1 %} × {{ item.quantity }}{% endif %}</span><span class="font-body-md text-body-md text-on-surface font-semibold pr-3">{{ item.line_total|rupees }}</span></div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">{{ item.options }}</span>
+</div>
+</div>
+{% else %}
+<div class="flex items-center gap-4 group">
+<div class="w-20 h-20 rounded-lg overflow-hidden bg-surface-container-low flex-shrink-0 shadow-sm relative">
+<img alt="{{ item.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="{{ item.image_url }}"/>
+{% if item.category_label %}<span class="absolute top-1 left-1 px-1.5 py-0.5 rounded-full bg-primary/90 text-on-primary font-label-sm text-[9px] font-bold">{{ item.category_label }}</span>{% endif %}
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-start justify-between gap-2">
+<h3 class="font-title-md text-title-md text-on-surface font-semibold truncate group-hover:text-primary transition-colors">{% if item.product %}<a href="{{ item.product.get_absolute_url }}">{{ item.name }}</a>{% else %}{{ item.name }}{% endif %}</h3>
+<span class="font-title-md text-title-md text-on-surface font-bold">{{ item.line_total|rupees }}</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">{{ item.options }}</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Qty: {{ item.quantity }}</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed/50 text-on-primary-fixed font-label-sm text-label-sm">Handcrafted</span>
+</div>
+</div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+{% if order.gift_note %}
+<div class="my-3 p-4 rounded-lg bg-surface-container-low border-l-4 border-primary relative overflow-hidden">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary flex-shrink-0 mt-0.5"><span class="material-symbols-outlined text-[18px]">mark_email_read</span></div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wider">Hand-Inked Calligraphy Keepsake</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-[10px]">Wax Sealed ♡</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface italic mt-1 font-serif">"For {{ order.recipient_name }} ♡ — {{ order.gift_note }}"</p>
+{% if order.gift_from %}<span class="font-body-sm text-body-sm text-on-surface-variant mt-1 block">Signed: {{ order.gift_from }}</span>{% endif %}
+</div>
+</div>
+</div>
+{% endif %}
+<div class="pt-5 mt-4 border-t border-surface-container flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">pin_drop</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">{% if order.status == "delivered" %}Delivered to{% else %}Delivering to{% endif %}: <strong class="text-on-surface">{{ order.recipient_name }}, {{ order.address_line2 }}, {{ order.city }}</strong></span>
+</div>
+<div class="flex items-center gap-2.5 flex-wrap">
+<a class="px-4 py-2 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-semibold transition-all flex items-center gap-1.5" href="{{ order.get_absolute_url }}"><span class="material-symbols-outlined text-[16px]">receipt_long</span><span>View Order</span></a>
+<a class="px-4 py-2 rounded-full bg-tertiary-fixed text-on-tertiary-fixed hover:bg-tertiary-fixed-dim font-label-md text-label-md font-bold transition-all flex items-center gap-1.5" href="{{ whatsapp_url }}?text={{ 'Hi Janjé! About my order '|add:order.number|urlencode }}" rel="noopener" target="_blank"><span class="material-symbols-outlined text-[16px]">chat</span><span>WhatsApp Atelier</span></a>
+{% if order.is_active_order %}
+<a class="px-5 py-2 rounded-full bg-primary hover:bg-on-primary-container text-on-primary font-label-md text-label-md font-bold shadow-[0_4px_14px_rgba(164,48,115,0.3)] hover:scale-105 transition-all flex items-center gap-1.5" href="{{ order.get_absolute_url }}"><span class="material-symbols-outlined text-[16px]">local_shipping</span><span>Track Order</span></a>
+{% else %}
+<button class="js-reorder px-4 py-2 rounded-full bg-primary-fixed hover:bg-primary-fixed-dim text-on-primary-fixed font-label-md text-label-md font-bold transition-all shadow-sm flex items-center gap-1.5" data-products="{% for item in order.items.all %}{% if item.product_id %}{{ item.product_id }},{% endif %}{% endfor %}" type="button"><span class="material-symbols-outlined text-[16px]">repeat</span><span>Reorder Keepsake 🎀</span></button>
+{% endif %}
+</div>
+</div>
+</article>
+{% empty %}
+<div class="rounded-xl bg-surface-container-lowest p-10 shadow-[0_8px_24px_rgba(244,114,182,0.08)] text-center flex flex-col items-center gap-4">
+<div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[32px]">local_florist</span></div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">{% if status_filter == "all" %}No keepsakes yet{% else %}Nothing in this list yet{% endif %}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">Your handcrafted orders, gift notes and live atelier progress will appear right here ♡</p>
+<a class="px-6 py-3 rounded-full bg-primary hover:bg-on-primary-container text-on-primary font-label-lg text-label-lg font-bold shadow-md" href="{% url 'shop:product_list' %}">Start Shopping</a>
+</div>
+{% endfor %}
+<!-- VIP Artisan Concierge Callout Banner -->
+<div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary-fixed/50 via-primary-fixed/20 to-secondary-fixed/40 p-6 md:p-8 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full bg-primary text-on-primary flex items-center justify-center flex-shrink-0 shadow-md">
+<span class="material-symbols-outlined text-[28px]">handshake</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wider">Bespoke Artisan Concierge</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold mt-0.5">Need custom colors or special anniversary florals?</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                Chat directly with Lead Floral Artisan <strong>Pooja</strong> on WhatsApp to customize petals, charms, and color palettes.
+              </p>
+</div>
+</div>
+<a class="px-6 py-3 rounded-full bg-primary hover:bg-on-primary-container text-on-primary font-label-lg text-label-lg font-bold shadow-[0_8px_20px_rgba(164,48,115,0.25)] hover:scale-105 transition-all flex items-center gap-2 whitespace-nowrap" href="{{ whatsapp_url }}?text={{ 'Hi Janjé! I would love a custom keepsake 🌸'|urlencode }}" rel="noopener" target="_blank">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+<span>WhatsApp VIP Concierge</span>
+</a>
+</div>
+</div>
+<!-- Right Column: Rewards, Addresses & Calligraphy Vault (4 cols) -->
+<aside class="lg:col-span-4 space-y-6">
+<!-- MODULE 1: Bow Club Rewards & Loyalty Blossom Meter -->
+<div class="rounded-xl bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(244,114,182,0.1)] relative overflow-hidden scroll-mt-40" id="rewards">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">stars</span>
+<h3 class="font-title-lg text-title-lg text-on-surface font-bold">Bow Club Blossoms</h3>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">{{ tier }}</span>
+</div>
+<div class="p-4 rounded-lg bg-surface-container-low/70 mb-4 text-center">
+<div class="font-headline-lg text-headline-lg text-primary font-bold">{{ blossoms }}</div>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Earned Blossom Points</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Earn 1 Blossom for every ₹10 of handcrafted joy</p>
+</div>
+<!-- Progress to Next Reward -->
+<div class="space-y-2 mb-4">
+<div class="flex items-center justify-between text-body-sm font-medium">
+<span class="text-on-surface">Next Gift: <strong>Velvet Bow Hairband</strong></span>
+<span class="text-primary font-bold">{{ blossoms }} / {{ next_reward }}</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full rounded-full bg-primary" style="width: {{ reward_progress }}%;"></div>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant block text-right">{% if blossoms_to_go %}Only {{ blossoms_to_go }} more Blossoms to unlock!{% else %}Unlocked! WhatsApp us to claim your gift 🎀{% endif %}</span>
+</div>
+<div class="pt-4 border-t border-surface-container">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-title-md text-title-md text-on-surface font-semibold text-[14px]">Share the Bow Club</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[12px]">Friends get 10% off their first handcrafted joy</p>
+</div>
+</div>
+<div class="mt-3 flex items-center gap-2">
+<input aria-label="Share code" class="js-copy-source w-full px-3 py-1.5 rounded-full bg-surface-container-low text-on-surface font-label-md text-label-md font-bold text-center tracking-wider border-none focus:outline-none" readonly="" value="WELCOME10"/>
+<button class="js-copy px-3.5 py-1.5 rounded-full bg-primary-fixed hover:bg-primary-fixed-dim text-on-primary-fixed font-label-md text-label-md font-bold transition-colors" type="button">
+                Copy
+              </button>
+</div>
+</div>
+</div>
+<!-- MODULE 2: Saved Gifting Addresses -->
+<div class="rounded-xl bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(244,114,182,0.1)] scroll-mt-40" id="addresses">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">location_on</span>
+<h3 class="font-title-lg text-title-lg text-on-surface font-bold">Gifting Addresses</h3>
+</div>
+<button class="js-toggle-address font-label-sm text-label-sm text-primary font-bold hover:underline" type="button">+ New</button>
+</div>
+<div class="space-y-3">
+{% for a in addresses %}
+<div class="p-4 rounded-lg {% if a.is_default %}bg-primary-fixed/20 hover:bg-primary-fixed/30{% else %}bg-surface-container-low hover:bg-surface-container{% endif %} relative group transition-colors">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="font-title-md text-title-md text-on-surface font-bold">{{ a.recipient_name }}</span>
+<span class="px-2 py-0.5 rounded-full {% if a.is_default %}bg-primary text-on-primary{% else %}bg-secondary-fixed text-on-secondary-fixed{% endif %} font-label-sm text-[10px] font-bold">{{ a.label }}</span>
+</div>
+<form action="{% url 'accounts:address_delete' a.pk %}" method="post">{% csrf_token %}
+<button aria-label="Remove address" class="sm:opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-error" type="submit"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</form>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">{{ a.one_line }}</p>
+<span class="font-label-sm text-label-sm text-on-surface-variant block mt-1">Ph: +91 {{ a.phone }}</span>
+</div>
+{% empty %}
+<p class="font-body-sm text-body-sm text-on-surface-variant">No saved addresses yet — tick "save this address" at checkout or add one below.</p>
+{% endfor %}
+</div>
+<button class="js-toggle-address w-full mt-4 py-2.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-semibold transition-all flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">add_location_alt</span>
+<span>Add New Gifting Recipient</span>
+</button>
+<form action="{% url 'accounts:address_add' %}" class="js-address-form hidden mt-4 space-y-2" method="post">
+{% csrf_token %}
+<div class="grid grid-cols-2 gap-2">
+<input class="w-full px-4 py-2.5 rounded-2xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" name="label" placeholder="Label (e.g. Bestie ♡)" required type="text" value="Personal"/>
+<input class="w-full px-4 py-2.5 rounded-2xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" name="phone" placeholder="Mobile number" required type="text" inputmode="numeric" value="{{ address_form.phone.value|default:'' }}"/>
+</div>
+<input class="w-full px-4 py-2.5 rounded-2xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" name="recipient_name" placeholder="Recipient's full name" required type="text" value="{{ address_form.recipient_name.value|default:'' }}"/>
+<input class="w-full px-4 py-2.5 rounded-2xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" name="line1" placeholder="Flat / Villa / Building" required type="text" />
+<input class="w-full px-4 py-2.5 rounded-2xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" name="line2" placeholder="Street / Area / Sector" required type="text" />
+<div class="grid grid-cols-3 gap-2">
+<input class="w-full px-4 py-2.5 rounded-2xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" name="city" placeholder="City" required type="text" />
+<input class="w-full px-4 py-2.5 rounded-2xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" name="state" placeholder="State" required type="text" />
+<input class="w-full px-4 py-2.5 rounded-2xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" name="pincode" placeholder="Pincode" required type="text" inputmode="numeric" maxlength="6"/>
+</div>
+<label class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant"><input class="accent-primary" name="is_default" type="checkbox"/> Make this my default address</label>
+<button class="w-full py-2.5 rounded-full bg-primary text-on-primary font-label-md text-label-md font-bold shadow-sm" type="submit">Save Address ♡</button>
+</form>
+</div>
+<!-- MODULE 3: Calligraphy Notes Vault -->
+<div class="rounded-xl bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(244,114,182,0.1)] scroll-mt-40" id="notes">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">draw</span>
+<h3 class="font-title-lg text-title-lg text-on-surface font-bold">Saved Gift Messages</h3>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">{{ saved_notes|length }} Saved</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+            Quickly reuse thoughtful notes penned for birthdays, cheer-ups, and festive moments.
+          </p>
+<div class="space-y-3">
+{% for o in saved_notes %}
+<div class="p-3.5 rounded-lg bg-surface-container-low relative group">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm {% cycle 'text-primary' 'text-secondary' %} font-bold">For {{ o.recipient_name }} • {{ o.created_at|date:"M Y" }}</span>
+<span class="material-symbols-outlined text-[16px] text-primary">favorite</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface italic font-serif line-clamp-2">"{{ o.gift_note }}"</p>
+<button class="js-use-note mt-2 text-primary font-label-sm text-label-sm hover:underline flex items-center gap-1" data-note="{{ o.gift_note }}" type="button">
+<span>Use on next gift</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+{% empty %}
+<p class="font-body-sm text-body-sm text-on-surface-variant">Notes you write at checkout are saved here so you can reuse them ♡</p>
+{% endfor %}
+</div>
+</div>
+<!-- MODULE 4: Packaging & Care Guide Mini Banner -->
+<div class="p-5 rounded-xl bg-surface-container-low text-on-surface flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+</div>
+<div>
+<h4 class="font-title-md text-title-md font-semibold text-[15px]">Handmade Pipe Cleaner Care</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+              Janjé bouquets are eternal! To dust, blow lightly with cool hair dryer setting. Reshape fuzzy wire petals gently with fingers anytime.
+            </p>
+<a class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm font-bold mt-2 hover:underline" href="{% url 'shop:our_story' %}#care">
+<span>Read Full Preservation Tips</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- MODULE 5: Account Settings -->
+<div class="rounded-xl bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(244,114,182,0.1)] scroll-mt-40" id="settings">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-[22px]">settings</span>
+<h3 class="font-title-lg text-title-lg text-on-surface font-bold">Account Settings</h3>
+</div>
+<form action="{% url 'accounts:profile' %}" class="space-y-3" method="post">
+{% csrf_token %}
+<label class="block font-label-md text-label-md text-on-surface font-semibold space-y-1.5"><span>Full name</span>
+<input class="w-full px-4 py-2.5 rounded-2xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" name="full_name" required type="text" value="{{ profile_form.full_name.value|default:'' }}"/></label>
+<label class="block font-label-md text-label-md text-on-surface font-semibold space-y-1.5"><span>Mobile number</span>
+<input class="w-full px-4 py-2.5 rounded-2xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" inputmode="numeric" name="phone" required type="tel" value="{{ profile_form.phone.value|default:'' }}"/></label>
+<button class="w-full py-2.5 rounded-full bg-primary text-on-primary font-label-md text-label-md font-bold shadow-sm" type="submit">Save Profile</button>
+</form>
+<form action="{% url 'accounts:logout' %}" class="mt-4 pt-4 border-t border-surface-container" method="post">
+{% csrf_token %}
+<button class="w-full py-2.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5" type="submit"><span class="material-symbols-outlined text-[16px]">logout</span> Sign Out</button>
+</form>
+</div>
+</aside>
+</div>
+</div>
+</div>
+{% endblock %}

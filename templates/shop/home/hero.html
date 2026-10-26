@@ -1,0 +1,26 @@
+{% load studio_tags %}
+<section class="max-w-[1200px] mx-auto px-4 sm:px-6 pt-12 sm:pt-14 pb-8 flex flex-wrap items-center gap-10">
+<div class="flex-[1_1_380px] flex flex-col gap-[18px]">
+<span class="self-start bg-butter px-3.5 py-1.5 font-hand text-[22px] font-bold -rotate-3 shadow-[0_2px_0_#EBD98A]">{% txt "home.hero.sticker" "Pretty little things" %}</span>
+<h1 class="m-0 font-hand text-[64px] sm:text-[96px] leading-[0.9] font-bold">{% txt "home.hero.title" "Blush & Bow" %}</h1>
+<p class="m-0 text-lg leading-relaxed text-cocoa-soft max-w-[420px]">{% txt "home.hero.text" "Handmade flower bouquets, clips, claws & hairbands to add a pop of happiness to your everyday." %}</p>
+<div class="flex flex-wrap gap-3 mt-1.5">
+<a class="btn btn-berry btn-lg basis-full sm:basis-auto" href="#shop">{% txt "home.hero.button" "Shop the drop" %}</a>
+<a class="btn btn-ghost btn-lg basis-full sm:basis-auto" href="{{ instagram_url }}" rel="noopener" target="_blank">{% txt "home.hero.button2" "DM to order" %}</a>
+</div>
+</div>
+<div class="flex-[1_1_340px] flex justify-center">
+<div class="relative w-full max-w-[470px] aspect-[1/1.02]">
+{% with main=hero_products.0|default:bestsellers.0 %}{% if main %}
+<a aria-label="{{ main.name }}" href="{{ main.get_absolute_url }}"><img alt="{{ main.name }}" class="absolute left-[12%] top-[6%] w-[76%] aspect-square object-cover rounded-full border-8 border-blush shadow-[0_0_0_3px_rgb(var(--c-line)),0_24px_48px_rgba(180,72,95,0.18)]" src="{{ main.image_src }}"/></a>
+{% endif %}{% endwith %}
+{% for p in polaroids %}
+<a class="absolute {% if forloop.first %}left-0 bottom-[2%] w-[34%] -rotate-[8deg]{% else %}right-0 bottom-[8%] w-[30%] rotate-[7deg]{% endif %} bg-white p-1.5 pb-[22px] rounded-md shadow-[0_10px_24px_rgba(74,44,38,0.16)]" href="{{ p.get_absolute_url }}"><img alt="{{ p.name }}" class="w-full aspect-square object-cover rounded-[3px]" src="{{ p.image_src }}"/></a>
+{% endfor %}
+<div class="absolute top-0 left-0 bg-lilac px-3.5 py-2 font-hand text-[22px] font-bold -rotate-[8deg] rounded-md shadow-[0_6px_14px_rgba(74,44,38,0.12)]">{% txt "home.hero.note" "Handmade with love" %}</div>
+{% include "partials/bow.html" with cls="absolute top-0 right-[6%] w-[18%] h-auto" %}
+<svg aria-hidden="true" class="absolute top-[44%] right-[1%] w-[7%] h-auto" viewBox="0 0 24 24"><path d="M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" fill="#FCE58A" stroke="#C9A227" stroke-width="1.2"></path></svg>
+<svg aria-hidden="true" class="absolute top-[40%] left-[2%] w-[8%] h-auto" viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" fill="#F4B6C2" style="stroke: rgb(var(--c-primary))" stroke-width="1.5"></path></svg>
+</div>
+</div>
+</section>

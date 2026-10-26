@@ -1,0 +1,69 @@
+{% extends "studio/base.html" %}
+{% block title %}Colours & fonts{% endblock %}
+{% block heading %}Colours &amp; fonts{% endblock %}
+{% block fonts %}<link href="{{ font_preview_url }}" rel="stylesheet"/>{% endblock %}
+{% block actions %}<a class="st-btn" href="{% url 'shop:home' %}" rel="noopener" target="_blank">Open shop ↗</a>{% endblock %}
+{% block content %}
+<form class="grid xl:grid-cols-[minmax(0,1fr)_420px] gap-5 items-start" id="appearance-form" method="post">
+{% csrf_token %}
+<div class="flex flex-col gap-5 min-w-0">
+<section class="st-card flex flex-col gap-4">
+<div class="flex items-center justify-between"><h2 class="!m-0">Colours</h2><button class="st-btn st-btn-sm" name="reset_colors" type="submit" value="1">Reset to original palette</button></div>
+<div class="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
+{% for field in color_fields %}
+<label class="flex items-center gap-3 p-2.5 border border-stone-200 rounded-xl cursor-pointer" for="{{ field.id_for_label }}">
+{{ field }}
+<span class="flex flex-col"><span class="font-semibold text-sm">{{ field.label }}</span><span class="text-xs text-stone-500 font-mono js-hex">{{ field.value }}</span></span>
+</label>
+{% for error in field.errors %}<p class="sf-err">{{ error }}</p>{% endfor %}
+{% endfor %}
+</div>
+</section>
+<section class="st-card flex flex-col gap-4">
+<h2 class="!m-0">Fonts</h2>
+<div class="st-grid-2">
+{% include "studio/_field.html" with field=form.font_heading %}
+{% include "studio/_field.html" with field=form.font_body %}
+{% include "studio/_field.html" with field=form.font_logo %}
+{% include "studio/_field.html" with field=form.base_font_size %}
+</div>
+</section>
+<section class="st-card flex flex-col gap-4">
+<h2 class="!m-0">Extras</h2>
+{% include "studio/_field.html" with field=form.show_announcement %}
+{% include "studio/_field.html" with field=form.custom_css %}
+</section>
+</div>
+<aside class="flex flex-col gap-3 xl:sticky xl:top-4">
+<div class="st-card !p-0 overflow-hidden" id="theme-preview">
+<div class="pv-bar">First drop is live · Launch prices</div>
+<div class="pv-page">
+<div class="pv-logo">Janjé</div>
+<span class="pv-sticker">Pretty little things</span>
+<div class="pv-h1">Blush &amp; Bow</div>
+<p class="pv-text">Handmade flower bouquets, clips &amp; hairbands to add a pop of happiness to your everyday.</p>
+<div class="flex gap-2 flex-wrap"><span class="pv-btn">Shop the drop</span><span class="pv-btn pv-ghost">DM to order</span></div>
+<div class="pv-card"><div class="pv-h2">First drop · Launch prices</div><span class="pv-muted">Limited pieces.</span></div>
+<div class="flex gap-2"><span class="pv-tag pv-soft">Handmade</span><span class="pv-tag pv-lilac">Comfy</span><span class="pv-tag pv-blue">Gifting</span></div>
+</div>
+</div>
+<button class="st-btn st-btn-primary" type="submit">Save appearance</button>
+<p class="m-0 text-xs text-stone-500">The preview updates as you change things. Save to put it live.</p>
+</aside>
+</form>
+<style>
+#theme-preview { --p: #B4485F; }
+.pv-bar { background: var(--p); color: #fff; text-align: center; padding: 8px; font: 700 12px var(--pv-body); }
+.pv-page { background: var(--pv-bg); color: var(--pv-text); padding: 22px; display: flex; flex-direction: column; gap: 12px; font-family: var(--pv-body); font-size: var(--pv-size); }
+.pv-logo { font: 700 30px var(--pv-logo); color: var(--p); }
+.pv-sticker { align-self: flex-start; background: var(--pv-yellow); padding: 4px 12px; font: 700 20px var(--pv-heading); transform: rotate(-3deg); }
+.pv-h1 { font: 700 64px/0.9 var(--pv-heading); }
+.pv-h2 { font: 700 28px/1 var(--pv-heading); }
+.pv-text, .pv-muted { color: var(--pv-muted); margin: 0; line-height: 1.5; }
+.pv-btn { background: var(--p); color: #fff; border-radius: 999px; padding: 10px 18px; font-weight: 800; border: 2px solid var(--p); }
+.pv-ghost { background: #fff; color: var(--p); }
+.pv-card { background: var(--pv-yellow); border-radius: 18px; padding: 16px; border: 2px dashed var(--pv-line); }
+.pv-tag { padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 13px; }
+.pv-soft { background: var(--pv-soft); } .pv-lilac { background: var(--pv-lilac); } .pv-blue { background: var(--pv-blue); }
+</style>
+{% endblock %}

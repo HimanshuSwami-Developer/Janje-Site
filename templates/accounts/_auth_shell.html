@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="relative w-full overflow-hidden bg-gradient-to-b from-surface via-primary-fixed/20 to-surface py-12 md:py-16 px-margin md:px-margin-md">
+<div class="absolute -top-12 -left-12 w-96 h-96 rounded-full bg-primary-fixed-dim/30 blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/2 -right-12 w-96 h-96 rounded-full bg-secondary-fixed/40 blur-3xl pointer-events-none"></div>
+<div class="relative max-w-md mx-auto bg-surface-container-lowest rounded-xl p-8 md:p-10 shadow-[0_16px_40px_-12px_rgba(244,114,182,0.18)]">
+<div class="absolute -top-3 left-14 w-28 h-7 bg-primary-fixed/60 -rotate-2 rounded-sm shadow-sm opacity-80 pointer-events-none"></div>
+<div class="flex flex-col items-center text-center mb-6">
+<div class="w-14 h-14 rounded-full bg-primary-fixed flex items-center justify-center text-primary mb-3 shadow-[0_4px_16px_rgba(244,114,182,0.25)]"><span class="material-symbols-outlined text-[28px]">{% block auth_icon %}favorite{% endblock %}</span></div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-semibold">{% block auth_title %}{% endblock %}</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">{% block auth_subtitle %}{% endblock %}</p>
+</div>
+{% if form.non_field_errors %}<div class="mb-4 p-3 rounded-lg bg-error-container text-on-error-container font-body-sm text-body-sm">{{ form.non_field_errors.0 }}</div>{% endif %}
+{% block auth_form %}{% endblock %}
+</div>
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% load studio_tags %}
+<section aria-label="Offers" class="max-w-[1200px] mx-auto px-4 sm:px-6 pt-8 flex flex-wrap gap-4">
+<div class="flex-[1_1_340px] bg-butter rounded-3xl px-[26px] py-6 flex flex-col gap-2.5 border-2 border-dashed border-butter-line">
+<span class="font-hand text-[34px] sm:text-[40px] font-bold leading-none">{% txt "home.offer.title" "First drop · Launch prices" %}</span>
+<span class="text-[15px] text-butter-ink">{% txt "home.offer.text" "Limited pieces. Once they’re gone, they’re gone." %}</span>
+<a class="btn btn-cocoa self-start text-sm" href="#shop">{% txt "home.offer.button" "Grab yours" %}</a>
+</div>
+{% if feature_category %}
+<div class="flex-[1_1_340px] bg-lilac rounded-3xl p-3.5 flex items-center gap-4">
+<img alt="" class="w-[120px] h-[120px] object-cover rounded-2xl flex-none" loading="lazy" src="{{ feature_category.image_src }}"/>
+<div class="flex flex-col gap-1.5 pr-2">
+<span class="font-hand text-[30px] sm:text-[36px] font-bold leading-none">{{ feature_category.tagline|default:feature_category.name }}</span>
+<a class="font-extrabold text-sm text-berry" href="{{ feature_category.get_absolute_url }}">{% txt "home.offer.feature_link" "Shop the collection →" %}</a>
+</div>
+</div>
+{% endif %}
+</section>

@@ -1,0 +1,27 @@
+{% load shop_tags %}
+<svg aria-hidden="true" class="absolute -top-4 left-6" height="30" viewBox="0 0 24 24" width="30"><path d="M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" fill="#FCE58A" stroke="#C9A227" stroke-width="1.2"></path></svg>
+<div class="flex items-center justify-between gap-2">
+<span class="font-hand text-[34px] font-bold leading-none">Your order</span>
+<a class="text-sm font-extrabold" href="{% url 'shop:cart' %}">Edit</a>
+</div>
+{% for line in lines %}
+<div class="flex items-center gap-3">
+{% if line.image %}<img alt="" class="w-14 h-14 object-cover rounded-xl flex-none bg-white" src="{{ line.image }}"/>{% else %}<span class="w-14 h-14 rounded-xl flex-none bg-lilac text-berry flex items-center justify-center"><span class="material-symbols-outlined">{{ line.icon }}</span></span>{% endif %}
+<span class="flex-1 min-w-0 font-bold text-[15px]">{{ line.name }} × {{ line.qty }}{% if line.options and line.kind == "product" %}<span class="block text-xs font-semibold text-cocoa-soft truncate">{{ line.options }}</span>{% endif %}</span>
+<span class="font-extrabold">{{ line.line_total|rupees }}</span>
+</div>
+{% endfor %}
+<div class="dash"></div>
+<div class="flex items-center gap-2">
+<label class="sr-only" for="coupon-code">Promo code</label>
+<input class="js-coupon-input flex-1 min-w-0 px-3.5 py-2.5 rounded-xl border-2 border-blush-line bg-white font-bold uppercase placeholder:normal-case placeholder:font-semibold focus:outline-none focus:border-berry" id="coupon-code" placeholder="Promo code" type="text" value="{% if totals.coupon_discount %}{{ totals.coupon_code }}{% endif %}"/>
+{% if totals.coupon_discount %}<button class="js-coupon-remove btn bg-white text-berry text-sm px-4" type="button">Remove</button>{% else %}<button class="js-coupon-apply btn btn-cocoa text-sm px-4" type="button">Apply</button>{% endif %}
+</div>
+<div class="flex justify-between"><span>Subtotal</span><span class="font-extrabold">{{ totals.subtotal|rupees }}</span></div>
+{% if totals.coupon_discount %}<div class="flex justify-between text-berry"><span>Code {{ totals.coupon_code }}</span><span class="font-extrabold">−{{ totals.coupon_discount|rupees }}</span></div>{% endif %}
+{% if totals.prepaid_discount %}<div class="flex justify-between text-berry"><span>UPI saving</span><span class="font-extrabold">−{{ totals.prepaid_discount|rupees }}</span></div>{% endif %}
+<div class="flex justify-between"><span>Delivery</span><span class="font-extrabold">{% if totals.shipping %}{{ totals.shipping|rupees }}{% else %}Free{% endif %}</span></div>
+{% if totals.cod_fee %}<div class="flex justify-between"><span>Cash on delivery fee</span><span class="font-extrabold">{{ totals.cod_fee|rupees }}</span></div>{% endif %}
+<div class="flex justify-between text-xl"><span class="font-extrabold">Total</span><span class="font-extrabold" data-total="{{ totals.total|rupees }}" id="summary-total">{{ totals.total|rupees }}</span></div>
+<button class="js-place-order btn btn-berry btn-lg hide-sm" type="submit">Place order</button>
+<a class="hide-sm text-center font-bold text-sm" href="{% url 'shop:cart' %}">Back to cart</a>

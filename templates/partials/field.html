@@ -1,0 +1,4 @@
+<label class="field{% if field.errors %} has-err{% endif %}" for="id_{{ field.name }}">{{ label }}
+<input {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %} id="id_{{ field.name }}" {% if inputmode %}inputmode="{{ inputmode }}"{% endif %} {% if maxlength %}maxlength="{{ maxlength }}"{% endif %} name="{{ field.name }}" placeholder="{{ placeholder }}" required type="{{ type|default:'text' }}" value="{{ field.value|default:'' }}"/>
+{% if field.errors %}<span class="err">{{ field.errors.0 }}</span>{% endif %}
+</label>

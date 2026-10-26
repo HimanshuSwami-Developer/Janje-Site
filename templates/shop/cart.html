@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% load studio_tags %}
+{% block title %}Your cart | Janjé{% endblock %}
+{% block content %}
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6 pt-6 sm:pt-11 pb-20 pad-bar flex flex-col gap-6">
+<div class="flex items-center gap-2.5">
+<h1 class="m-0 font-hand text-5xl sm:text-[64px] font-bold leading-none">{% txt "cart.title" "Your cart" %}</h1>
+<svg aria-hidden="true" height="36" viewBox="0 0 24 24" width="36"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" fill="#F4B6C2" stroke="#B4485F" stroke-width="1.5"></path></svg>
+</div>
+<div id="cart-body">
+{% include "partials/cart_body.html" %}
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "studio/base.html" %}
+{% block title %}Delete {{ obj }}{% endblock %}
+{% block crumbs %}<p class="st-crumbs m-0"><a href="{% url 'studio:list' res.slug %}">{{ res.title }}</a> /</p>{% endblock %}
+{% block heading %}Delete {{ obj }}?{% endblock %}
+{% block content %}
+<form class="st-card max-w-[560px] flex flex-col gap-4" method="post">
+{% csrf_token %}
+<p class="m-0">This removes the {{ res.singular }} “{{ obj }}” for good. {% if res.slug == "products" %}Past orders keep their copy of the name and price. To take it off the shop for now, switch it off instead.{% endif %}</p>
+<div class="flex gap-2">
+<button class="st-btn st-btn-primary !bg-red-700 !border-red-700" type="submit">Yes, delete</button>
+<a class="st-btn" href="{% url 'studio:list' res.slug %}">Keep it</a>
+</div>
+</form>
+{% endblock %}

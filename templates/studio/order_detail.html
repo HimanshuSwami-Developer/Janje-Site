@@ -1,0 +1,56 @@
+{% extends "studio/base.html" %}{% load shop_tags %}
+{% block title %}Order {{ order.number }}{% endblock %}
+{% block crumbs %}<p class="st-crumbs m-0"><a href="{% url 'studio:orders' %}">Orders</a> /</p>{% endblock %}
+{% block heading %}Order {{ order.number }}{% endblock %}
+{% block actions %}
+<a class="st-btn st-btn-primary" href="{{ customer_whatsapp_url }}" rel="noopener" target="_blank" title="Opens WhatsApp with the order, items, total and pay link filled in">Send order on WhatsApp</a>
+<a class="st-btn" href="{{ order.get_absolute_url }}" rel="noopener" target="_blank">Customer’s page ↗</a>
+{% endblock %}
+{% block content %}
+<div class="grid lg:grid-cols-[minmax(0,1fr)_340px] gap-5 items-start">
+<div class="flex flex-col gap-5">
+<section class="st-card">
+<h2>Items</h2>
+<table class="st-table">
+<tbody>
+{% for item in order.items.all %}
+<tr>
+<td class="w-14">{% if item.image_url %}<img alt="" class="st-thumb" src="{{ item.image_url }}"/>{% endif %}</td>
+<td><span class="font-semibold">{{ item.name }}</span><div class="text-xs text-stone-500">{{ item.options }}</div></td>
+<td>× {{ item.quantity }}</td>
+<td class="text-right font-semibold">{{ item.line_total|rupees }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+<dl class="grid grid-cols-[1fr_auto] gap-x-6 gap-y-1 mt-4 text-sm">
+<dt>Subtotal</dt><dd class="m-0 text-right">{{ order.subtotal|rupees }}</dd>
+{% if order.coupon_discount %}<dt>Code {{ order.coupon_code }}</dt><dd class="m-0 text-right">−{{ order.coupon_discount|rupees }}</dd>{% endif %}
+{% if order.prepaid_discount %}<dt>UPI saving</dt><dd class="m-0 text-right">−{{ order.prepaid_discount|rupees }}</dd>{% endif %}
+<dt>Delivery ({{ order.get_delivery_mode_display }})</dt><dd class="m-0 text-right">{{ order.shipping_fee|rupees }}</dd>
+{% if order.cod_fee %}<dt>COD fee</dt><dd class="m-0 text-right">{{ order.cod_fee|rupees }}</dd>{% endif %}
+<dt class="font-bold text-base">Total</dt><dd class="m-0 text-right font-bold text-base">{{ order.total|rupees }}</dd>
+</dl>
+</section>
+<div class="st-grid-2">
+<section class="st-card">
+<h2>Deliver to</h2>
+<p class="m-0"><strong>{{ order.recipient_name }}</strong><br/>{{ order.address_line1 }}<br/>{{ order.address_line2 }}<br/>{{ order.city }}, {{ order.state }} {{ order.pincode }}</p>
+<p class="m-0 mt-2 text-sm text-stone-600">+91 {{ order.phone }} · {{ order.email }}</p>
+</section>
+<section class="st-card">
+<h2>Gift note</h2>
+{% if order.gift_note %}<p class="m-0 italic">“{{ order.gift_note }}”</p><p class="m-0 mt-1 text-sm text-stone-600">— {{ order.gift_from|default:"With love" }}</p>{% else %}<p class="m-0 text-stone-500">No note.</p>{% endif %}
+</section>
+</div>
+</div>
+<form class="st-card flex flex-col gap-4 lg:sticky lg:top-4" method="post">
+{% csrf_token %}
+<h2 class="!m-0">Update</h2>
+<p class="m-0 text-sm text-stone-600">Placed {{ order.created_at|date:"j M Y, g:i A" }} · {{ order.get_payment_method_display }}{% if order.upi_id %} from {{ order.upi_id }}{% endif %}</p>
+{% for field in form %}{% include "studio/_field.html" %}{% endfor %}
+<button class="st-btn st-btn-primary" type="submit">Save changes</button>
+<p class="m-0 text-xs text-stone-500">The customer sees the new status on their order page and in their account.</p>
+</form>
+</div>
+{% endblock %}

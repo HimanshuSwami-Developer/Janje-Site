@@ -1,0 +1,89 @@
+{% load studio_tags shop_tags %}
+{% if not lines %}
+<div class="bg-white rounded-[28px] px-5 py-12 flex flex-col items-center gap-4 text-center border-2 border-dashed border-blush-line">
+<div class="w-[140px] h-[140px] rounded-full bg-blush flex items-center justify-center">{% include "partials/bow.html" with cls="w-24 h-16" fill="#FFFFFF" %}</div>
+<span class="font-hand text-4xl font-bold leading-tight">{% txt "cart.empty" "Your cart is feeling a little empty" %}</span>
+<a class="btn btn-berry btn-lg" href="{% url 'shop:product_list' %}">{% txt "cart.empty_button" "Find something cute" %}</a>
+</div>
+{% else %}
+<div class="flex flex-wrap gap-7 items-start">
+<div class="flex-[999_1_480px] min-w-0 flex flex-col gap-3.5">
+{% for line in lines %}
+<div class="bg-white rounded-[22px] p-3 flex items-center gap-3.5 shadow-[0_8px_24px_rgba(180,72,95,0.08)]">
+{% if line.image %}<img alt="{{ line.name }}" class="w-[84px] h-[84px] sm:w-[110px] sm:h-[110px] object-cover rounded-2xl flex-none bg-blush" src="{{ line.image }}"/>
+{% else %}<span class="w-[84px] h-[84px] sm:w-[110px] sm:h-[110px] rounded-2xl flex-none bg-lilac flex items-center justify-center text-berry"><span class="material-symbols-outlined text-[36px]">{{ line.icon }}</span></span>{% endif %}
+<div class="flex-1 min-w-0 flex flex-col gap-2">
+<div class="flex items-start justify-between gap-2">
+<div class="flex flex-col gap-0.5 min-w-0">
+{% if line.url %}<a class="font-hand text-[28px] font-bold leading-none text-cocoa no-underline hover:text-berry" href="{{ line.url }}">{{ line.name }}</a>{% else %}<span class="font-hand text-[28px] font-bold leading-none">{{ line.name }}</span>{% endif %}
+<span class="text-[13px] text-cocoa-soft">{% if line.options %}{{ line.options }} · {% endif %}{{ line.unit_price|rupees }}{% if line.compare_at_price %} <s>{{ line.compare_at_price|rupees }}</s>{% endif %}</span>
+</div>
+<button aria-label="Remove {{ line.name }}" class="js-bag-qty w-11 h-11 flex-none rounded-full bg-cream text-cocoa inline-flex items-center justify-center" data-key="{{ line.key }}" data-qty="0" type="button">
+<svg aria-hidden="true" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" width="18"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</button>
+</div>
+<div class="flex items-center justify-between gap-2">
+<div class="qty bg-cream">
+<button aria-label="Decrease {{ line.name }}" class="js-bag-qty" data-key="{{ line.key }}" data-qty="{{ line.qty|add:'-1' }}" type="button">−</button>
+<span>{{ line.qty }}</span>
+<button aria-label="Increase {{ line.name }}" class="js-bag-qty" data-key="{{ line.key }}" data-qty="{{ line.qty|add:'1' }}" type="button">+</button>
+</div>
+<span class="font-extrabold">{{ line.line_total|rupees }}</span>
+</div>
+</div>
+</div>
+{% endfor %}
+
+<!-- Gift note -->
+<div class="bg-butter rounded-[22px] p-4 sm:p-5 flex flex-col gap-2 -rotate-[0.5deg]">
+<span class="font-hand text-[26px] font-bold leading-none">{% txt "cart.note_title" "A little note?" %}</span>
+<div class="js-note-view flex flex-wrap items-center justify-between gap-2">
+<p class="m-0 text-[15px] {% if bag.note %}font-hand text-[22px]{% else %}text-butter-ink{% endif %}">{% if bag.note %}“{{ bag.note }}”{% else %}{% txt "cart.note_text" "We’ll handwrite it on a card and tuck it in, free." %}{% endif %}</p>
+<button class="js-note-edit font-extrabold text-sm text-berry" type="button">{% if bag.note %}Edit note{% else %}Write a note{% endif %}</button>
+</div>
+<form class="js-note-form hidden flex-col gap-2">
+<label class="field"><span class="sr-only">Gift note</span><textarea maxlength="200" name="note" placeholder="Happy birthday, you lovely human ♡" rows="3">{{ bag.note }}</textarea></label>
+<div class="flex gap-2"><button class="btn btn-berry text-sm" type="submit">Save note</button><button class="js-note-cancel btn bg-white text-cocoa text-sm" type="button">Cancel</button></div>
+</form>
+</div>
+
+{% if upsell_addons %}
+<div class="flex flex-col gap-2.5 pt-2">
+<span class="font-hand text-[28px] font-bold leading-none">{% txt "cart.extras" "Little extras" %}</span>
+<div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
+{% for addon in upsell_addons %}
+<div class="bg-white rounded-2xl p-3 flex items-center gap-3 shadow-[0_8px_24px_rgba(180,72,95,0.06)]">
+{% if addon.image_src %}<img alt="" class="w-12 h-12 rounded-xl object-cover flex-none" src="{{ addon.image_src }}"/>{% else %}<span class="w-12 h-12 rounded-xl bg-lilac text-berry flex items-center justify-center flex-none"><span class="material-symbols-outlined">{{ addon.icon|default:"spa" }}</span></span>{% endif %}
+<div class="flex-1 min-w-0"><p class="m-0 font-bold text-sm truncate">{{ addon.short_name|default:addon.name }}</p><p class="m-0 text-[13px] text-cocoa-soft">+{{ addon.price|rupees }}</p></div>
+<button aria-label="Add {{ addon.name }}" class="js-add-addon w-11 h-11 rounded-full bg-blush text-cocoa font-extrabold text-xl flex-none" data-addon-id="{{ addon.pk }}" type="button">+</button>
+</div>
+{% endfor %}
+</div>
+</div>
+{% endif %}
+<a class="self-start font-extrabold py-2.5" href="{% url 'shop:product_list' %}">← Keep shopping</a>
+</div>
+
+<aside class="flex-[1_1_300px] bg-blush rounded-[26px] p-[26px] flex flex-col gap-3.5 relative">
+{% include "partials/bow.html" with cls="absolute -top-[18px] right-[22px] w-[60px] h-[38px]" fill="#FFFFFF" knot_only=1 %}
+<span class="font-hand text-[34px] font-bold leading-none">{% txt "cart.summary" "Summary" %}</span>
+<div class="flex justify-between"><span>Items</span><span class="font-extrabold">{{ bag.count }}</span></div>
+<div class="flex justify-between"><span>Subtotal</span><span class="font-extrabold">{{ totals.subtotal|rupees }}</span></div>
+{% if totals.coupon_discount %}<div class="flex justify-between text-berry"><span>Code {{ totals.coupon_code }}</span><span class="font-extrabold">−{{ totals.coupon_discount|rupees }}</span></div>{% endif %}
+<div class="flex justify-between"><span>Delivery</span><span class="font-extrabold">{% if totals.shipping %}{{ totals.shipping|rupees }}{% else %}Free{% endif %}</span></div>
+{% if totals.free_shipping_remaining %}<span class="text-[13px] text-cocoa-mid">Add {{ totals.free_shipping_remaining|rupees }} more for free delivery</span>{% endif %}
+<div class="dash"></div>
+<div class="flex justify-between text-xl"><span class="font-extrabold">Total</span><span class="font-extrabold">{{ totals.total|rupees }}</span></div>
+<a class="btn btn-berry btn-lg hide-sm" href="{% url 'shop:checkout' %}">Checkout</a>
+<span class="text-[13px] text-cocoa-mid text-center">{% txt "cart.upi_hint" "Pay by UPI and save ₹50 more at checkout" %}</span>
+</aside>
+</div>
+
+<div class="mbar">
+<div class="flex flex-col flex-none">
+<span class="text-xs text-cocoa-soft font-bold">{{ bag.count }} item{{ bag.count|pluralize }}</span>
+<span class="font-extrabold text-lg">{{ totals.total|rupees }}</span>
+</div>
+<a class="btn btn-berry flex-1" href="{% url 'shop:checkout' %}">Checkout</a>
+</div>
+{% endif %}

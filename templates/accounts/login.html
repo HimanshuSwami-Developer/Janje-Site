@@ -1,0 +1,16 @@
+{% extends "accounts/_auth_shell.html" %}
+{% block title %}Sign In | Janjé - Blush &amp; Bow{% endblock %}
+{% block auth_icon %}local_florist{% endblock %}
+{% block auth_title %}Welcome back ♡{% endblock %}
+{% block auth_subtitle %}Sign in to track your keepsakes &amp; Blossom points{% endblock %}
+{% block auth_form %}
+<form class="space-y-4" method="post">
+{% csrf_token %}
+<input name="next" type="hidden" value="{{ next }}"/>
+{% include "accounts/_input.html" with name="email" label="Email" type="email" placeholder="you@domain.com" field=form.email autocomplete="email" %}
+{% include "accounts/_input.html" with name="password" label="Password" type="password" placeholder="Your password" field=form.password autocomplete="current-password" %}
+<button class="w-full py-3.5 rounded-full bg-primary hover:bg-on-primary-container text-on-primary font-label-lg text-label-lg font-bold shadow-[0_10px_24px_rgba(164,48,115,0.28)] transition-all hover:scale-[1.01]" type="submit">Sign In</button>
+</form>
+<p class="text-center font-body-sm text-body-sm text-on-surface-variant mt-6">New to Janjé? <a class="text-primary font-bold hover:underline" href="{% url 'accounts:signup' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Join the Bow Club</a></p>
+<p class="text-center font-body-sm text-body-sm text-on-surface-variant mt-2">Ordered as a guest? <a class="text-primary font-bold hover:underline" href="{% url 'shop:track_order' %}">Track your order</a></p>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "studio/base.html" %}{% load shop_tags %}
+{% block title %}Overview{% endblock %}
+{% block heading %}Hi {{ user.first_name|default:"there" }} ♡{% endblock %}
+{% block actions %}
+<a class="st-btn" href="{% url 'studio:edit_mode' %}?on=1&amp;next=/">Edit site live</a>
+<a class="st-btn st-btn-primary" href="{% url 'studio:new' 'products' %}">+ Add product</a>
+{% endblock %}
+{% block content %}
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-5">
+{% for label, value, url, slug in stats %}
+<a class="st-card st-stat" href="{% if slug %}{% url url slug %}{% else %}{% url url %}{% endif %}"><strong>{{ value }}</strong><span>{{ label }}</span></a>
+{% endfor %}
+<div class="st-card st-stat"><strong>{{ revenue|rupees|default:"₹0" }}</strong><span>Paid so far</span></div>
+</div>
+<div class="grid lg:grid-cols-[2fr_1fr] gap-5 items-start">
+<section class="st-card">
+<div class="flex items-center justify-between mb-2"><h2 class="!m-0">Latest orders</h2><a class="st-btn st-btn-sm" href="{% url 'studio:orders' %}">All orders</a></div>
+<div class="st-scroll">
+<table class="st-table">
+<thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead>
+<tbody>
+{% for o in recent_orders %}
+<tr><td><a class="font-semibold" href="{% url 'studio:order' o.pk %}">{{ o.number }}</a><div class="text-xs text-stone-500">{{ o.created_at|date:"j M, g:i A" }}</div></td><td>{{ o.recipient_name }}</td><td>{{ o.total|rupees }}</td>
+<td>{% if o.is_paid %}<span class="st-badge ok">Paid</span>{% elif o.payment_method == "cod" %}<span class="st-badge">COD</span>{% else %}<span class="st-badge warn">Awaiting UPI</span>{% endif %}</td>
+<td><span class="st-badge pink">{{ o.get_status_display }}</span></td></tr>
+{% empty %}
+<tr><td colspan="5" class="text-stone-500">No orders yet.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</section>
+<div class="flex flex-col gap-5">
+<section class="st-card">
+<h2>Make the site yours</h2>
+<div class="flex flex-col gap-2">
+<a class="st-btn justify-start" href="{% url 'studio:edit_mode' %}?on=1&amp;next=/">✏️ Click-to-edit any text on the site</a>
+<a class="st-btn justify-start" href="{% url 'studio:layout' %}">↕ Drag home page sections</a>
+<a class="st-btn justify-start" href="{% url 'studio:appearance' %}">🎨 Colours &amp; fonts</a>
+<a class="st-btn justify-start" href="{% url 'studio:list' 'products' %}">🛍 Products</a>
+</div>
+</section>
+<section class="st-card">
+<h2>Running low</h2>
+{% for p in low_stock %}
+<a class="flex items-center gap-3 py-1.5 no-underline" href="{% url 'studio:edit' 'products' p.pk %}"><img alt="" class="st-thumb" src="{{ p.image_src }}"/><span class="flex-1 font-semibold">{{ p.name }}</span><span class="st-badge warn">{{ p.stock }} left</span></a>
+{% empty %}
+<p class="text-stone-500 m-0">Everything is well stocked.</p>
+{% endfor %}
+</section>
+</div>
+</div>
+{% endblock %}

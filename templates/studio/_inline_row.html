@@ -1,0 +1,8 @@
+<div class="sf-inline js-row">
+<span class="st-grip js-row-grip" title="Drag to reorder">⋮⋮</span>
+{% for hidden in f.hidden_fields %}{{ hidden }}{% endfor %}
+{% for field in f.visible_fields %}{% if field.name != "DELETE" %}{% include "studio/_field.html" %}{% endif %}{% endfor %}
+{% if f.DELETE %}<span class="hidden">{{ f.DELETE }}</span>{% endif %}
+<button class="st-btn st-btn-sm st-btn-danger js-remove-row" type="button">Remove</button>
+{% for error in f.non_field_errors %}<p class="sf-err basis-full">{{ error }}</p>{% endfor %}
+</div>

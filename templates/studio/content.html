@@ -1,0 +1,48 @@
+{% extends "studio/base.html" %}
+{% block title %}All text{% endblock %}
+{% block heading %}All text on the site{% endblock %}
+{% block actions %}
+<form class="flex gap-2" method="get">
+{% if page %}<input name="page" type="hidden" value="{{ page }}"/>{% endif %}
+<label class="sr-only" for="q">Search text</label>
+<input class="st-search" id="q" name="q" placeholder="Find a word or phrase…" type="search" value="{{ query }}"/>
+</form>
+<a class="st-btn st-btn-primary" href="{% url 'studio:edit_mode' %}?on=1&amp;next=/">Edit on the page instead</a>
+{% endblock %}
+{% block content %}
+<p class="text-sm text-stone-500 mb-3 max-w-[720px]">Every heading, button and sentence on the shop is listed here once its page has been opened. Change the words, colour, size, font or weight, then save. “Reset” brings back the original.</p>
+<div class="st-chips mb-4">
+<a class="st-chip {% if not page %}is-on{% endif %}" href="?">All pages</a>
+{% for p in pages %}<a class="st-chip {% if page == p %}is-on{% endif %}" href="?page={{ p }}">{{ p|capfirst }}</a>{% endfor %}
+</div>
+<div class="flex flex-col gap-2">
+{% for b in blocks %}
+<form action="{% url 'studio:content_save' %}" class="st-card !p-3 grid gap-3 lg:grid-cols-[200px_minmax(0,1fr)_auto] items-start" method="post">
+{% csrf_token %}
+<input name="key" type="hidden" value="{{ b.key }}"/>
+<input name="next" type="hidden" value="{{ request.get_full_path }}"/>
+<div class="min-w-0"><code class="text-xs text-stone-500 break-all">{{ b.key }}</code>{% if b.text != b.default or b.is_styled %}<span class="st-badge pink ml-1">Edited</span>{% endif %}</div>
+<div class="flex flex-col gap-2 min-w-0">
+<label class="sr-only" for="t-{{ b.pk }}">Text</label>
+<textarea class="w-full p-2.5 border border-stone-300 rounded-lg" id="t-{{ b.pk }}" name="text" rows="{% if b.text|length > 90 %}3{% else %}1{% endif %}" style="{{ b.style }}">{{ b.text }}</textarea>
+<details class="text-sm">
+<summary class="cursor-pointer text-stone-600 font-semibold">Style{% if b.is_styled %} (custom){% endif %}</summary>
+<div class="flex flex-wrap gap-3 items-end pt-2 sf-inline !bg-white !border-0 !p-0">
+<label class="sf-field !flex-none">Colour<span class="flex items-center gap-2"><input {% if b.color %}checked{% endif %} class="js-color-on" type="checkbox" aria-label="Use a custom colour"/><input class="js-color-val" type="color" value="{{ b.color|default:'#4A2C26' }}"/><input name="color" type="hidden" value="{{ b.color }}"/></span></label>
+<label class="sf-field !flex-[0_0_110px]">Size (px)<input max="200" min="8" name="size" placeholder="Auto" type="number" value="{{ b.size|default_if_none:'' }}"/></label>
+<label class="sf-field !flex-[0_0_150px]">Font<select name="font"><option value="">As designed</option>{% for v, l in fonts %}<option {% if b.font == v %}selected{% endif %} value="{{ v }}">{{ l }}</option>{% endfor %}</select></label>
+<label class="sf-field !flex-[0_0_140px]">Weight<select name="weight"><option value="">As designed</option>{% for v, l in weights %}<option {% if b.weight == v %}selected{% endif %} value="{{ v }}">{{ l }}</option>{% endfor %}</select></label>
+<label class="sf-switch pb-2"><input {% if b.italic %}checked{% endif %} name="italic" type="checkbox"/><span class="sf-switch-ui" aria-hidden="true"></span><span>Italic</span></label>
+</div>
+</details>
+</div>
+<div class="flex gap-2">
+<button class="st-btn st-btn-primary st-btn-sm" type="submit">Save</button>
+<button class="st-btn st-btn-sm" name="reset" type="submit" value="1">Reset</button>
+</div>
+</form>
+{% empty %}
+<div class="st-card text-stone-500">No text found. Open the shop’s pages once and their text will appear here.</div>
+{% endfor %}
+</div>
+{% endblock %}

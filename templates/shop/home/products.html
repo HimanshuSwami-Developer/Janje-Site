@@ -1,0 +1,20 @@
+{% load studio_tags %}
+<section class="max-w-[1200px] mx-auto px-4 sm:px-6 pt-[72px] pb-4 flex flex-col gap-[22px]" id="shop">
+<div class="flex flex-col items-center gap-1 text-center">
+<h2 class="m-0 font-hand text-[42px] sm:text-[56px] font-bold leading-none">{% txt "home.products.title" "Pick your favourite" %}</h2>
+<span class="text-[15px] text-cocoa-soft">{{ product_total }} piece{{ product_total|pluralize }} · {% txt "home.products.subtitle" "handmade in small batches" %}</span>
+</div>
+<div aria-label="Filter products" class="hscroll flex gap-2 p-0.5" role="tablist" style="justify-content: safe center">
+<button aria-selected="true" class="js-filter chip snap is-on" data-filter="all" role="tab" type="button">All</button>
+{% for cat in categories %}<button aria-selected="false" class="js-filter chip snap" data-filter="{{ cat.slug }}" role="tab" type="button">{{ cat.pill_name }}</button>{% endfor %}
+</div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-[22px]" id="bestseller-grid">
+{% for product in bestsellers %}
+{% include "partials/product_card.html" %}
+{% empty %}
+<p class="col-span-full text-center text-cocoa-soft py-10">{% txt "home.products.empty" "New pieces are being handmade. Check back soon ♡" %}</p>
+{% endfor %}
+<p class="js-filter-empty hidden col-span-full text-center text-cocoa-soft py-10">Nothing here yet. <a class="font-extrabold" href="{% url 'shop:product_list' %}">See everything</a></p>
+</div>
+<a class="btn btn-ghost self-center" href="{% url 'shop:product_list' %}">{% txt "home.products.see_all" "See all pieces" %}</a>
+</section>

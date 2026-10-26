@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+{% for section in sections %}
+{% if cms_edit %}
+<div class="cms-section{% if not section.is_visible %} is-hidden{% endif %}" data-label="{{ section.label }}" data-page="home" data-section="{{ section.key }}" data-visible="{{ section.is_visible|yesno:'1,0' }}">
+{% include section.template %}
+</div>
+{% elif section.is_visible %}
+{% include section.template %}
+{% endif %}
+{% endfor %}
+{% endblock %}

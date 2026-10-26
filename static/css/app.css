@@ -1,0 +1,90 @@
+/* Janjé storefront: shared rules from the "Janjé Website" canvas */
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: rgb(var(--c-bg)); color: rgb(var(--c-text)); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+*, *::before, *::after { box-sizing: border-box; }
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  line-height: 1;
+}
+
+/* Hover motion */
+.lift { transition: transform .2s ease; }
+.lift:hover { transform: translateY(-4px); }
+.pill { transition: filter .15s ease; }
+.pill:hover { filter: brightness(1.08); }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 24px;
+  border-radius: 999px; font-weight: 800; font-size: 15px; text-decoration: none; cursor: pointer; border: 0;
+  transition: filter .15s ease; }
+.btn:hover { filter: brightness(1.08); }
+.btn:disabled { opacity: .55; cursor: not-allowed; filter: none; }
+.btn-berry { background: rgb(var(--c-primary)); color: #fff; }
+.btn-berry:hover { color: #fff; }
+.btn-ghost { background: #fff; color: rgb(var(--c-primary)); border: 2px solid rgb(var(--c-primary)); }
+.btn-cocoa { background: rgb(var(--c-text)); color: #fff; }
+.btn-lg { min-height: 52px; font-size: 16px; padding: 0 28px; }
+
+/* Header nav */
+.nav-link { padding: 10px 16px; border-radius: 999px; text-decoration: none; color: rgb(var(--c-text)); font-weight: 700; }
+.nav-link:hover, .nav-link.is-active { background: rgb(var(--c-soft)); }
+
+/* Horizontal scrollers */
+.hscroll { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.hscroll::-webkit-scrollbar { display: none; }
+.snap { scroll-snap-align: start; }
+
+/* Filter pills (home + shop) */
+.chip { flex: 0 0 auto; display: inline-flex; align-items: center; height: 44px; padding: 0 18px; border-radius: 999px;
+  border: 2px solid rgb(var(--c-line)); background: #fff; color: rgb(var(--c-text)); font-weight: 800; font-size: 14px; cursor: pointer;
+  text-decoration: none; white-space: nowrap; }
+.chip.is-on { background: rgb(var(--c-primary)); border-color: rgb(var(--c-primary)); color: #fff; }
+
+/* Style / size option pills on the product page */
+.opt { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 999px;
+  border: 2px solid rgb(var(--c-line)); background: #fff; color: rgb(var(--c-text)); font-weight: 700; font-size: 14px; cursor: pointer; }
+.opt.is-on { border-color: rgb(var(--c-primary)); background: #FFF0F3; }
+.opt .dot { width: 30px; height: 30px; border-radius: 999px; border: 2px solid #fff; box-shadow: 0 0 0 1px rgb(var(--c-line)); margin-left: -8px; }
+
+/* Form fields */
+.field { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px; min-width: 0; }
+.field input, .field textarea, .field select { font: inherit; font-weight: 600; font-size: 16px; padding: 14px 16px; border-radius: 14px;
+  border: 2px solid rgb(var(--c-line)); background: #fff; color: rgb(var(--c-text)); outline: none; width: 100%; }
+.field input:focus, .field textarea:focus, .field select:focus { border-color: rgb(var(--c-primary)); }
+.field .err { color: #B3261E; font-weight: 700; font-size: 13px; }
+.field.has-err input { border-color: #B3261E; }
+
+/* Quantity stepper */
+.qty { display: inline-flex; align-items: center; background: #fff; border-radius: 999px; border: 2px solid rgb(var(--c-line)); }
+.qty button { width: 44px; height: 42px; border: 0; background: transparent; font-size: 20px; font-weight: 800; color: rgb(var(--c-text)); cursor: pointer; }
+.qty span, .qty output { min-width: 28px; text-align: center; font-weight: 800; }
+
+/* Dashed rule and sticky-note tape */
+.dash { height: 0; border-top: 2px dashed #E3A9B5; }
+.tape { position: absolute; top: -11px; left: 50%; width: 76px; height: 22px; background: rgba(255,255,255,.75); }
+
+/* Fixed mobile action bar */
+.mbar { display: none; }
+@media (max-width: 760px) {
+  .mbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: #fff; border-top: 2px dashed rgb(var(--c-line));
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); align-items: center; gap: 12px; box-shadow: 0 -8px 24px rgba(74,44,38,.08); }
+  .pad-bar { padding-bottom: 120px !important; }
+  .hide-sm { display: none !important; }
+}
+
+/* Anchored sections shouldn't hide under the sticky header */
+[id] { scroll-margin-top: 90px; }
+
+@media print {
+  header, footer, .mbar, #toast-stack { display: none !important; }
+}
+
+/* Staff toolbar (only rendered for staff) */
+.studio-bar { position: fixed; left: 16px; bottom: 16px; z-index: 90; display: flex; gap: 6px; padding: 6px; border-radius: 999px;
+  background: #1f1a19; box-shadow: 0 10px 30px rgba(0,0,0,.25); font-family: system-ui, sans-serif; }
+.studio-bar-btn { padding: 8px 14px; border-radius: 999px; color: #fff; font-size: 13px; font-weight: 700; text-decoration: none; }
+.studio-bar-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+.studio-bar-btn.is-on { background: #fff; color: #1f1a19; }
+@media (max-width: 760px) { .studio-bar { bottom: 96px; } }

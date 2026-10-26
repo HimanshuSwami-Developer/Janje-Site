@@ -1,0 +1,19 @@
+{% load studio_tags %}
+<section class="max-w-[1200px] mx-auto px-4 sm:px-6 pt-[72px] pb-20 flex flex-col gap-8" id="reviews">
+<div class="flex flex-col items-center gap-1 text-center">
+<h2 class="m-0 font-hand text-[42px] sm:text-[56px] font-bold leading-none">{% txt "home.reviews.title" "Love notes" %}</h2>
+<span class="text-[15px] text-cocoa-soft">{% txt "home.reviews.subtitle" "What our customers say" %}</span>
+</div>
+<div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-7 px-1.5">
+{% for note in love_notes %}
+<figure class="m-0 {% cycle 'bg-blush -rotate-[1.5deg]' 'bg-butter rotate-[1.2deg]' 'bg-lilac -rotate-[0.8deg]' %} pt-7 px-[22px] pb-[22px] rounded-lg flex flex-col gap-2.5 relative shadow-[0_8px_20px_rgba(74,44,38,0.08)]">
+<span aria-hidden="true" class="tape -translate-x-1/2 rotate-3"></span>
+<span aria-label="{{ note.rating }} out of 5" class="text-berry text-lg tracking-[2px]">{{ note.stars }}</span>
+<blockquote class="m-0 font-hand text-[25px] leading-tight">{{ note.text }}</blockquote>
+<figcaption class="font-extrabold text-sm">— {{ note.name }}{% if note.location %}, {{ note.location }}{% endif %}</figcaption>
+</figure>
+{% empty %}
+<p class="col-span-full text-center text-cocoa-soft">{% txt "home.reviews.empty" "Your love note could be the first ♡" %}</p>
+{% endfor %}
+</div>
+</section>

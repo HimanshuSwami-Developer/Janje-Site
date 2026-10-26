@@ -1,0 +1,67 @@
+{% extends "base.html" %}{% load studio_tags shop_tags %}
+{% block title %}Checkout | Janjé{% endblock %}
+{% block header %}{% include "partials/checkout_header.html" with step="details" %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block content %}
+<form class="max-w-[1100px] mx-auto px-4 sm:px-6 pt-6 sm:pt-11 pb-20 pad-bar flex flex-wrap gap-7 items-start" data-ncr="{{ ncr_prefixes|join:',' }}" id="checkout-form" method="post" novalidate>
+{% csrf_token %}
+<input name="delivery_mode" type="hidden" value="express"/>
+<input name="gift_from" type="hidden" value="{{ form.gift_from.value|default:'' }}"/>
+<div class="flex-[999_1_480px] min-w-0 flex flex-col gap-[22px]">
+<h1 class="m-0 font-hand text-5xl sm:text-[64px] font-bold leading-none">{% txt "checkout.title" "Almost yours!" %}</h1>
+
+<section class="bg-white rounded-[22px] sm:rounded-[26px] p-5 sm:p-[26px] flex flex-col gap-4 shadow-[0_8px_24px_rgba(180,72,95,0.08)]">
+<h2 class="m-0 font-hand text-[30px] font-bold leading-none">{% txt "checkout.details" "1 · Your details" %}</h2>
+<div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3.5">
+{% include "partials/field.html" with field=form.recipient_name label="Full name" type="text" autocomplete="name" placeholder="Your name" %}
+{% include "partials/field.html" with field=form.phone label="Phone (WhatsApp)" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="10-digit mobile" %}
+</div>
+{% include "partials/field.html" with field=form.email label="Email" type="email" autocomplete="email" placeholder="you@email.com" %}
+</section>
+
+<section class="bg-white rounded-[22px] sm:rounded-[26px] p-5 sm:p-[26px] flex flex-col gap-4 shadow-[0_8px_24px_rgba(180,72,95,0.08)]">
+<h2 class="m-0 font-hand text-[30px] font-bold leading-none">{% txt "checkout.address" "2 · Delivery address" %}</h2>
+{% include "partials/field.html" with field=form.address_line1 label="House / flat" type="text" autocomplete="address-line1" placeholder="Flat, building, tower" %}
+{% include "partials/field.html" with field=form.address_line2 label="Street / area" type="text" autocomplete="address-line2" placeholder="Street, area, landmark" %}
+<div class="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-3.5">
+{% include "partials/field.html" with field=form.city label="City" type="text" autocomplete="address-level2" placeholder="Delhi / Noida / Gurugram" %}
+{% include "partials/field.html" with field=form.state label="State" type="text" autocomplete="address-level1" placeholder="Haryana" %}
+{% include "partials/field.html" with field=form.pincode label="Pincode" type="text" autocomplete="postal-code" inputmode="numeric" placeholder="122002" maxlength="6" %}
+</div>
+<div class="bg-butter rounded-[14px] px-4 py-3 text-sm font-bold" id="pincode-status">{% txt "checkout.delivery_note" "Hand delivery in 24–48h across Delhi NCR · 3–5 days by courier everywhere else" %}</div>
+{% if user.is_authenticated %}<label class="flex items-center gap-2 text-sm font-bold text-cocoa-soft cursor-pointer"><input class="w-4 h-4 accent-berry" name="save_address" type="checkbox" {% if form.save_address.value %}checked{% endif %}/> Save this address for next time</label>{% endif %}
+</section>
+
+<section class="bg-white rounded-[22px] sm:rounded-[26px] p-5 sm:p-[26px] flex flex-col gap-3.5 shadow-[0_8px_24px_rgba(180,72,95,0.08)]">
+<h2 class="m-0 font-hand text-[30px] font-bold leading-none">{% txt "checkout.payment" "3 · Payment" %}</h2>
+<div aria-label="Payment method" class="flex flex-col gap-2.5" role="radiogroup">
+<label class="js-pay flex items-center gap-3.5 px-4 py-[15px] rounded-2xl border-2 cursor-pointer {% if payment_method != 'cod' %}border-berry bg-cream{% else %}border-blush-line bg-white{% endif %}">
+<input {% if payment_method != 'cod' %}checked{% endif %} class="w-5 h-5 accent-berry flex-none" id="pay_upi" name="payment_method" type="radio" value="upi"/>
+<span class="flex flex-col gap-0.5"><span class="font-bold">UPI <span class="ml-1 bg-blush text-berry px-2 py-0.5 rounded-full text-xs font-extrabold">₹50 off</span></span><span class="font-semibold text-[13px] text-cocoa-soft">GPay, PhonePe, Paytm. We’ll show a QR to pay after you place the order.</span></span>
+</label>
+<label class="js-pay flex items-center gap-3.5 px-4 py-[15px] rounded-2xl border-2 cursor-pointer {% if payment_method == 'cod' %}border-berry bg-cream{% else %}border-blush-line bg-white{% endif %}">
+<input {% if payment_method == 'cod' %}checked{% endif %} class="w-5 h-5 accent-berry flex-none" name="payment_method" type="radio" value="cod"/>
+<span class="flex flex-col gap-0.5"><span class="font-bold">Cash on delivery</span><span class="font-semibold text-[13px] text-cocoa-soft">+₹{{ cod_fee }} handling fee</span></span>
+</label>
+</div>
+</section>
+
+<section class="bg-butter rounded-[22px] sm:rounded-[26px] p-5 sm:p-[26px] flex flex-col gap-3 -rotate-[0.3deg]">
+<h2 class="m-0 font-hand text-[30px] font-bold leading-none">{% txt "checkout.note" "A little note?" %} <span class="font-sans text-sm font-bold text-butter-ink">(optional)</span></h2>
+<label class="field"><span class="sr-only">Gift note</span><textarea id="id_gift_note" maxlength="200" name="gift_note" placeholder="We handwrite it on a card, free ♡" rows="2">{{ form.gift_note.value|default:'' }}</textarea>{% if form.gift_note.errors %}<span class="err">{{ form.gift_note.errors.0 }}</span>{% endif %}</label>
+</section>
+</div>
+
+<aside class="flex-[1_1_300px] bg-blush rounded-[26px] p-6 flex flex-col gap-3.5 relative" id="checkout-summary">
+{% include "partials/checkout_summary.html" %}
+</aside>
+
+<div class="mbar">
+<div class="flex flex-col flex-none">
+<span class="text-xs text-cocoa-soft font-bold">Total</span>
+<span class="font-extrabold text-lg" id="mbar-total">{{ totals.total|rupees }}</span>
+</div>
+<button class="js-place-order btn btn-berry flex-1" type="submit">Place order</button>
+</div>
+</form>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% load studio_tags %}<footer class="bg-blush border-t-2 border-dashed border-blush-line">
+<div class="max-w-[1200px] mx-auto px-5 pt-11 pb-7 flex flex-wrap justify-between gap-7">
+<div class="flex-[1_1_260px] max-w-[340px] flex flex-col gap-2">
+<span class="font-script text-[40px] font-bold text-berry leading-none">{% txt "global.logo" "Janjé" %}</span>
+<span class="text-[15px] text-cocoa-mid">{% txt "global.footer.about" "Cute & elegant hair accessories and forever-blooming bouquets. Handmade in Gurgaon, shipping across Delhi NCR & India." %}</span>
+</div>
+<nav aria-label="Footer shop" class="flex-[1_1_140px] flex flex-col gap-2.5">
+<span class="font-extrabold">{% txt "global.footer.shop" "Shop" %}</span>
+{% for cat in nav_categories %}<a class="text-cocoa hover:text-berry" href="{{ cat.get_absolute_url }}">{{ cat.name }}</a>{% endfor %}
+<a class="text-cocoa hover:text-berry" href="{% url 'shop:cart' %}">Your cart</a>
+<a class="text-cocoa hover:text-berry" href="{% url 'shop:wishlist' %}">Wishlist</a>
+</nav>
+<nav aria-label="Footer help" class="flex-[1_1_140px] flex flex-col gap-2.5">
+<span class="font-extrabold">{% txt "global.footer.help" "Help" %}</span>
+<a class="text-cocoa hover:text-berry" href="{% url 'shop:track_order' %}">Track order</a>
+<a class="text-cocoa hover:text-berry" href="{% url 'shop:our_story' %}">Our story</a>
+<a class="text-cocoa hover:text-berry" href="{% url 'shop:our_story' %}#shipping">Shipping &amp; returns</a>
+<a class="text-cocoa hover:text-berry" href="{% url 'shop:our_story' %}#care">Care</a>
+<a class="text-cocoa hover:text-berry" href="{% url 'shop:our_story' %}#privacy">Privacy</a>
+{% if user.is_authenticated %}<a class="text-cocoa hover:text-berry" href="{% url 'accounts:account' %}">My orders</a>{% else %}<a class="text-cocoa hover:text-berry" href="{% url 'accounts:login' %}">Sign in</a>{% endif %}
+</nav>
+<div class="flex-[1_1_140px] flex flex-col gap-2.5">
+<span class="font-extrabold">{% txt "global.footer.hi" "Say hi" %}</span>
+<a class="text-cocoa hover:text-berry" href="{{ instagram_url }}" rel="noopener" target="_blank">Instagram · @{{ instagram_handle }}</a>
+<a class="text-cocoa hover:text-berry" href="{{ whatsapp_url }}" rel="noopener" target="_blank">WhatsApp us</a>
+<span class="text-cocoa-mid">{% txt "global.footer.dm" "DM to order or customise" %}</span>
+</div>
+</div>
+<div class="text-center p-4 text-[13px] text-cocoa-mid border-t border-blush-line">© {% now "Y" %} {% txt "global.footer.copyright" "Janjé · Made with love" %}</div>
+</footer>

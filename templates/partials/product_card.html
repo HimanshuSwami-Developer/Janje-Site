@@ -1,0 +1,16 @@
+{% load shop_tags %}<div class="js-product-card lift relative min-w-0 bg-white rounded-[22px] p-2.5 flex flex-col gap-2.5 shadow-[0_10px_28px_rgba(180,72,95,0.10)]" data-category="{{ product.category.slug }}">
+{% if cms_edit %}<a class="cms-edit-link" href="{% url 'studio:edit' 'products' product.pk %}">Edit product</a>{% endif %}
+<a aria-label="View {{ product.name }}" class="block" href="{{ product.get_absolute_url }}"><img alt="{{ product.name }}" class="w-full aspect-square object-cover rounded-2xl bg-blush" loading="lazy" src="{{ product.image_src }}"/></a>
+<span class="absolute top-[18px] left-[18px] bg-white px-2.5 py-[3px] rounded-full text-xs font-extrabold text-berry">{% if not product.in_stock %}Sold out{% else %}{{ product.badge|default:"Handmade" }}{% endif %}</span>
+<div class="flex flex-wrap items-end justify-between gap-2 px-1 pb-1">
+<div class="flex flex-col gap-0.5 min-w-0">
+<a class="font-hand text-[21px] sm:text-[26px] font-bold leading-none text-cocoa no-underline hover:text-berry" href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+<span class="text-sm font-bold text-cocoa-soft">{{ product.price|rupees }}{% if product.compare_at_price %} <s class="font-semibold opacity-70">{{ product.compare_at_price|rupees }}</s>{% endif %}</span>
+</div>
+{% if product.in_stock %}
+<button aria-label="Add {{ product.name }} to cart" class="js-quick-add btn btn-berry px-4 text-sm basis-full sm:basis-auto" data-product-id="{{ product.pk }}" type="button">Add</button>
+{% else %}
+<a class="btn bg-blush text-cocoa px-4 text-sm basis-full sm:basis-auto" href="{{ instagram_url }}" rel="noopener" target="_blank">DM us</a>
+{% endif %}
+</div>
+</div>

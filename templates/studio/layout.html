@@ -1,0 +1,18 @@
+{% extends "studio/base.html" %}
+{% block title %}Home page layout{% endblock %}
+{% block heading %}Home page layout{% endblock %}
+{% block actions %}<a class="st-btn st-btn-primary" href="{% url 'studio:edit_mode' %}?on=1&amp;next=/">Arrange on the live page</a>{% endblock %}
+{% block content %}
+<p class="text-sm text-stone-500 mb-3">Drag sections to change their order. Switch one off to hide it. Changes save straight away.</p>
+{% for page, sections in pages.items %}
+<ul class="st-card !p-2 max-w-[560px] flex flex-col gap-1 list-none m-0 js-sections" data-page="{{ page }}" data-url="{% url 'studio:sections_save' %}">
+{% for s in sections %}
+<li class="flex items-center gap-3 p-3 rounded-xl hover:bg-stone-50 bg-white" data-key="{{ s.key }}">
+<span class="st-grip js-grip" title="Drag to reorder">⋮⋮</span>
+<span class="flex-1 font-semibold">{{ s.label }}</span>
+<label class="sf-switch"><input {% if s.is_visible %}checked{% endif %} class="js-section-visible" type="checkbox"/><span class="sf-switch-ui" aria-hidden="true"></span><span class="sr-only">Show {{ s.label }}</span></label>
+</li>
+{% endfor %}
+</ul>
+{% endfor %}
+{% endblock %}

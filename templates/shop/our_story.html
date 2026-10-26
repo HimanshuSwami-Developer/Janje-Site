@@ -1,0 +1,36 @@
+{% extends "base.html" %}{% load studio_tags %}
+{% block title %}Our story | Janjé{% endblock %}
+{% block content %}
+<section class="max-w-[760px] mx-auto px-4 sm:px-6 pt-14 pb-10 flex flex-col items-center gap-[18px] text-center">
+<span class="bg-butter px-3.5 py-1.5 font-hand text-[22px] font-bold -rotate-3 shadow-[0_2px_0_#EBD98A]">{% txt "story.sticker" "Our story" %}</span>
+<h1 class="m-0 font-hand text-[52px] sm:text-[80px] leading-[0.9] font-bold">{% txt "story.title" "Little things, big smiles" %}</h1>
+<p class="m-0 text-lg leading-relaxed text-cocoa-soft">{% txt "story.text" "Janjé started at a tiny desk in Gurgaon with a handful of pipe cleaners and a love for everything soft, pastel and a little bit whimsical. Every bouquet, clip and hairband is still bent, twisted and fluffed by hand, so each piece is one of a kind." %}</p>
+</section>
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6 pb-20 grid grid-cols-1 md:grid-cols-3 gap-7">
+<section class="bg-blush -rotate-1 pt-7 px-[22px] pb-[22px] rounded-lg relative shadow-[0_8px_20px_rgba(74,44,38,0.08)]" id="shipping">
+<span aria-hidden="true" class="tape -translate-x-1/2 rotate-3"></span>
+<h2 class="m-0 font-hand text-[32px] font-bold leading-none mb-3">{% txt "story.shipping_title" "Shipping & returns" %}</h2>
+<ul class="m-0 pl-5 flex flex-col gap-2 text-[15px] leading-relaxed">
+<li>{% txt "story.shipping1" "Delhi NCR: hand delivery in 24–48 hours." %}</li>
+<li>{% txt "story.shipping2" "Rest of India: tracked courier in 3–5 working days." %}</li>
+<li>{% txt "story.shipping3" "Free delivery on orders over ₹499." %}</li>
+<li>{% txt "story.shipping4" "Arrived damaged? WhatsApp us a photo within 48 hours and we’ll remake or refund it." %}</li>
+</ul>
+</section>
+<section class="bg-butter rotate-1 pt-7 px-[22px] pb-[22px] rounded-lg relative shadow-[0_8px_20px_rgba(74,44,38,0.08)]" id="care">
+<span aria-hidden="true" class="tape -translate-x-1/2 -rotate-2"></span>
+<h2 class="m-0 font-hand text-[32px] font-bold leading-none mb-3">{% txt "story.care_title" "Care" %}</h2>
+<ul class="m-0 pl-5 flex flex-col gap-2 text-[15px] leading-relaxed">
+<li>{% txt "story.care1" "No water or sunlight needed. Our blooms never wilt." %}</li>
+<li>{% txt "story.care2" "Dust gently with a soft makeup brush or a cool hair-dryer setting." %}</li>
+<li>{% txt "story.care3" "Reshape fluffy petals with your fingers any time." %}</li>
+<li>{% txt "story.care4" "Keep claw clips away from heat styling tools." %}</li>
+</ul>
+</section>
+<section class="bg-lilac -rotate-[0.5deg] pt-7 px-[22px] pb-[22px] rounded-lg relative shadow-[0_8px_20px_rgba(74,44,38,0.08)]" id="privacy">
+<span aria-hidden="true" class="tape -translate-x-1/2 rotate-2"></span>
+<h2 class="m-0 font-hand text-[32px] font-bold leading-none mb-3">{% txt "story.privacy_title" "Privacy" %}</h2>
+<p class="m-0 text-[15px] leading-relaxed">{% txt "story.privacy" "We only use your name, phone, email and address to make and deliver your order and to send updates about it. We never sell your details." %}</p>
+</section>
+</div>
+{% endblock %}

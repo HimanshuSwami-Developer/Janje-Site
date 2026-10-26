@@ -1,0 +1,5 @@
+<label class="block space-y-1.5" for="id_{{ name }}">
+<span class="font-label-md text-label-md text-on-surface font-semibold">{{ label }}</span>
+<input autocomplete="{{ autocomplete|default:'on' }}" class="w-full px-4 py-3 rounded-2xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container transition-all" id="id_{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" required type="{{ type|default:'text' }}" {% if type != 'password' %}value="{{ field.value|default:'' }}"{% endif %}/>
+{% include "partials/field_error.html" %}
+</label>

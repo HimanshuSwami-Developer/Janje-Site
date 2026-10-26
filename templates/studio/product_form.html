@@ -1,0 +1,77 @@
+{% extends "studio/base.html" %}
+{% block title %}{% if obj %}{{ obj.name }}{% else %}New product{% endif %}{% endblock %}
+{% block crumbs %}<p class="st-crumbs m-0"><a href="{% url 'studio:list' 'products' %}">Products</a> /</p>{% endblock %}
+{% block heading %}{% if obj %}{{ obj.name }}{% else %}New product{% endif %}{% endblock %}
+{% block actions %}
+{% if obj %}
+<a class="st-btn" href="{{ obj.get_absolute_url }}" rel="noopener" target="_blank">View on shop ↗</a>
+<form action="{% url 'studio:duplicate' obj.pk %}" method="post">{% csrf_token %}<button class="st-btn" type="submit">Duplicate</button></form>
+{% endif %}
+{% endblock %}
+{% block content %}
+<form class="grid lg:grid-cols-[minmax(0,1fr)_320px] gap-5 items-start" enctype="multipart/form-data" method="post">
+{% csrf_token %}
+<div class="flex flex-col gap-5 min-w-0">
+{% if form.errors or formsets.images.total_error_count or formsets.sizes.total_error_count or formsets.colors.total_error_count %}<div class="st-msg is-err">Some details need fixing. They're marked in red below.</div>{% endif %}
+{% for error in form.non_field_errors %}<p class="sf-err">{{ error }}</p>{% endfor %}
+
+<section class="st-card flex flex-col gap-4">
+<h2 class="!m-0">Details</h2>
+{% include "studio/_field.html" with field=form.name %}
+{% include "studio/_field.html" with field=form.short_description %}
+{% include "studio/_field.html" with field=form.description %}
+<div class="st-grid-2">
+{% include "studio/_field.html" with field=form.price %}
+{% include "studio/_field.html" with field=form.compare_at_price %}
+{% include "studio/_field.html" with field=form.stock %}
+</div>
+</section>
+
+<section class="st-card flex flex-col gap-4">
+<h2 class="!m-0">Photos</h2>
+{% if obj.image_src %}<img alt="Current main photo" class="sf-preview" src="{{ obj.image_src }}"/>{% endif %}
+<div class="st-grid-2">
+{% include "studio/_field.html" with field=form.image %}
+{% include "studio/_field.html" with field=form.image_url %}
+</div>
+<div>
+<p class="font-semibold text-sm mb-2">More photos <span class="text-stone-500 font-normal">(shown as thumbnails; drag to reorder)</span></p>
+{% include "studio/_formset.html" with fs=formsets.images add_label="Add photo" %}
+</div>
+</section>
+
+<section class="st-card flex flex-col gap-3">
+<h2 class="!m-0">Sizes <span class="text-stone-500 font-normal text-sm">(each with its own price)</span></h2>
+{% include "studio/_formset.html" with fs=formsets.sizes add_label="Add size" %}
+</section>
+
+<section class="st-card flex flex-col gap-3">
+<h2 class="!m-0">Colours / styles</h2>
+{% include "studio/_formset.html" with fs=formsets.colors add_label="Add colour" %}
+</section>
+</div>
+
+<aside class="flex flex-col gap-5 lg:sticky lg:top-4">
+<section class="st-card flex flex-col gap-3">
+<h2 class="!m-0">Publish</h2>
+{% include "studio/_field.html" with field=form.is_active %}
+{% include "studio/_field.html" with field=form.is_bestseller %}
+{% include "studio/_field.html" with field=form.is_hero %}
+<div class="flex flex-col gap-2 pt-2">
+<button class="st-btn st-btn-primary" type="submit">Save</button>
+<button class="st-btn" name="continue" type="submit" value="1">Save &amp; keep editing</button>
+{% if obj %}<a class="st-btn st-btn-danger" href="{% url 'studio:delete' 'products' obj.pk %}">Delete product</a>{% endif %}
+</div>
+</section>
+<section class="st-card flex flex-col gap-3">
+<h2 class="!m-0">Organise</h2>
+{% include "studio/_field.html" with field=form.category %}
+{% include "studio/_field.html" with field=form.badge %}
+{% include "studio/_field.html" with field=form.badge_style %}
+{% include "studio/_field.html" with field=form.sticker %}
+{% include "studio/_field.html" with field=form.swatches %}
+{% include "studio/_field.html" with field=form.slug %}
+</section>
+</aside>
+</form>
+{% endblock %}

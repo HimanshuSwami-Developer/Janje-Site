@@ -1,0 +1,108 @@
+{% extends "base.html" %}{% load studio_tags shop_tags %}
+{% block title %}Order {{ order.number }} | Janjé{% endblock %}
+{% block extra_head %}
+<meta content="noindex, nofollow" name="robots"/>
+<meta content="Your Janjé order #{{ order.number }} ♡" property="og:title"/>
+<meta content="{% for item in order.items.all|slice:':3' %}{{ item.name }}{% if not forloop.last %}, {% endif %}{% endfor %} · {{ order.total|rupees }} · {{ order.get_status_display }}" property="og:description"/>
+{% if preview_image %}<meta content="{{ preview_image }}" property="og:image"/>{% endif %}
+{% endblock %}
+{% block header %}{% include "partials/checkout_header.html" with step="done" %}{% endblock %}
+{% block content %}
+<div class="max-w-[1100px] mx-auto px-4 pt-[72px] pb-16 flex flex-col items-center gap-10">
+<!-- Thank-you card -->
+<div class="relative max-w-[560px] w-full bg-white rounded-[28px] sm:rounded-[36px] px-5 sm:px-8 pt-14 sm:pt-16 pb-8 sm:pb-10 flex flex-col items-center gap-4 text-center shadow-[0_20px_50px_rgba(180,72,95,0.14)]">
+{% include "partials/bow.html" with cls="absolute -top-11 left-1/2 -translate-x-1/2 w-[132px] h-[84px]" %}
+<svg aria-hidden="true" class="absolute top-9 left-6 -rotate-12" height="30" viewBox="0 0 24 24" width="30"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" fill="#E9E1F7" stroke="#8C6CC4" stroke-width="1.5"></path></svg>
+<svg aria-hidden="true" class="absolute top-[50px] right-[26px]" height="26" viewBox="0 0 24 24" width="26"><path d="M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" fill="#FCE58A" stroke="#C9A227" stroke-width="1.2"></path></svg>
+
+<h1 class="m-0 font-hand text-[52px] sm:text-[72px] font-bold leading-[0.95]">{% txt "thanks.title" "Yay, it’s yours!" %}</h1>
+<p class="m-0 text-[17px] leading-relaxed text-cocoa-soft max-w-[400px]">{% txt "thanks.text" "Thank you for shopping with Janjé. We’ll message you on WhatsApp to confirm your order and delivery." %} <span class="whitespace-nowrap">(+91 {{ order.phone }})</span></p>
+
+<div aria-label="Your order" class="flex justify-center gap-1 pt-2.5 pb-1">
+{% for item in order.items.all|slice:":3" %}
+<div class="bg-white p-[5px] pb-4 rounded-[5px] shadow-[0_8px_18px_rgba(74,44,38,0.14)] {% cycle '-rotate-[7deg]' '-translate-y-1.5 rotate-2' 'rotate-[8deg]' %}">
+{% if item.image_url %}<img alt="{{ item.name }}" class="w-[84px] h-[84px] object-cover rounded-[3px]" src="{{ item.image_url }}"/>{% else %}<span class="w-[84px] h-[84px] rounded-[3px] bg-lilac text-berry flex items-center justify-center"><span class="material-symbols-outlined text-[36px]">{{ item.icon|default:"spa" }}</span></span>{% endif %}
+</div>
+{% endfor %}
+</div>
+
+<div class="bg-butter px-[18px] py-2 font-hand text-[25px] font-bold -rotate-2 my-1.5">Order #{{ order.number }}</div>
+<span class="bg-blush px-3.5 py-1.5 rounded-full text-sm font-extrabold text-berry">{{ order.get_status_display }}{% if order.is_active_order %} · arriving by {{ order.estimated_delivery|date:"D, j M" }}{% endif %}</span>
+
+{% if order.status != "cancelled" %}
+<ol aria-label="Order progress" class="w-full m-0 p-0 list-none flex flex-col gap-2.5 text-left pt-1">
+{% for step in order.track_steps %}
+<li class="flex items-center gap-3 {% if step.done %}text-berry{% else %}text-cocoa-mid{% endif %}"{% if step.current %} aria-current="step"{% endif %}>
+<span class="w-7 h-7 flex-none rounded-full flex items-center justify-center {% if step.done %}bg-berry text-white{% else %}bg-blush{% endif %}"><span class="material-symbols-outlined text-[16px]">{% if step.done %}check{% else %}radio_button_unchecked{% endif %}</span></span>
+<span class="text-[15px] {% if step.current %}font-extrabold{% else %}font-semibold{% endif %}">{{ step.label }}</span>
+</li>
+{% endfor %}
+</ol>
+{% if order.status_note and order.is_active_order %}<p class="m-0 text-sm text-cocoa-soft">{{ order.status_note }}</p>{% endif %}
+{% endif %}
+{% if not user.is_authenticated %}<p class="m-0 text-[13px] text-cocoa-mid">Save your order number. To check on it later, go to <a class="font-extrabold text-berry" href="{% url 'shop:track_order' %}">Track order</a> and enter it with your email or phone.</p>{% endif %}
+
+{% if upi_link %}
+<div class="w-full bg-cream rounded-[22px] p-5 flex flex-col sm:flex-row items-center gap-5 text-left border-2 border-dashed border-blush-line" id="upi-pay">
+<div aria-label="UPI QR code for {{ order.total|rupees }}" class="p-2.5 rounded-xl bg-white flex-none w-[168px] [&>svg]:w-full [&>svg]:h-auto" role="img">{{ upi_qr|safe }}</div>
+<div class="flex flex-col gap-2">
+<span class="font-hand text-[28px] font-bold leading-none">Scan &amp; pay {{ order.total|rupees }}</span>
+<span class="text-sm text-cocoa-soft">Use any UPI app. On your phone? Tap the button. We start making your order as soon as the payment lands.</span>
+<a class="btn btn-berry self-start text-sm" href="{{ upi_link }}">Pay with a UPI app</a>
+</div>
+</div>
+{% elif order.payment_method == "upi" and not order.is_paid %}
+<p class="m-0 w-full bg-cream rounded-2xl px-4 py-3 text-sm font-bold">We’ll WhatsApp you a UPI link for {{ order.total|rupees }} shortly ♡</p>
+{% endif %}
+
+{% if send_whatsapp_url %}
+<a class="w-full flex items-center justify-center gap-2 rounded-full px-5 py-3.5 bg-[#25D366] hover:bg-[#1ebe5b] text-white font-extrabold shadow-[0_10px_24px_rgba(37,211,102,0.3)] transition-colors" href="{{ send_whatsapp_url }}" rel="noopener" target="_blank">
+<span class="material-symbols-outlined text-[20px]">chat</span>Send my order on WhatsApp
+</a>
+<p class="m-0 -mt-2 text-[13px] text-cocoa-mid">One tap sends us your order, items and payment link, so we can confirm it on WhatsApp.</p>
+{% endif %}
+
+<div class="flex flex-wrap justify-center gap-2.5 pt-1.5 w-full">
+<a class="btn btn-berry basis-full sm:basis-auto" href="{% url 'shop:home' %}">{% txt "thanks.button" "Keep shopping" %}</a>
+<a class="btn btn-ghost basis-full sm:basis-auto" href="{{ instagram_url }}" rel="noopener" target="_blank">Follow @{{ instagram_handle }}</a>
+</div>
+</div>
+
+<!-- Order details -->
+<div class="w-full max-w-[860px] flex flex-wrap gap-6 items-start">
+<section class="flex-[1_1_360px] bg-blush rounded-[26px] p-6 flex flex-col gap-3.5">
+<h2 class="m-0 font-hand text-[34px] font-bold leading-none">{% txt "thanks.items" "What’s coming" %}</h2>
+{% for item in order.items.all %}
+<div class="flex items-center gap-3">
+<span class="flex-1 min-w-0 font-bold text-[15px]">{{ item.name }} × {{ item.quantity }}{% if item.options %}<span class="block text-xs font-semibold text-cocoa-soft truncate">{{ item.options }}</span>{% endif %}</span>
+<span class="font-extrabold">{{ item.line_total|rupees }}</span>
+</div>
+{% endfor %}
+<div class="dash"></div>
+<div class="flex justify-between"><span>Subtotal</span><span class="font-extrabold">{{ order.subtotal|rupees }}</span></div>
+{% if order.coupon_discount %}<div class="flex justify-between text-berry"><span>Code {{ order.coupon_code }}</span><span class="font-extrabold">−{{ order.coupon_discount|rupees }}</span></div>{% endif %}
+{% if order.prepaid_discount %}<div class="flex justify-between text-berry"><span>UPI saving</span><span class="font-extrabold">−{{ order.prepaid_discount|rupees }}</span></div>{% endif %}
+<div class="flex justify-between"><span>Delivery</span><span class="font-extrabold">{% if order.shipping_fee %}{{ order.shipping_fee|rupees }}{% else %}Free{% endif %}</span></div>
+{% if order.cod_fee %}<div class="flex justify-between"><span>Cash on delivery fee</span><span class="font-extrabold">{{ order.cod_fee|rupees }}</span></div>{% endif %}
+<div class="flex justify-between text-xl"><span class="font-extrabold">{% if order.is_paid %}Paid{% else %}Total due{% endif %}</span><span class="font-extrabold">{{ order.total|rupees }}</span></div>
+<span class="text-[13px] text-cocoa-mid">{% if order.is_paid %}Paid via {{ order.get_payment_method_display }}{% elif order.payment_method == "cod" %}Pay in cash when it arrives{% else %}Awaiting UPI payment{% endif %}</span>
+</section>
+
+<div class="flex-[1_1_300px] flex flex-col gap-6">
+<section class="bg-white rounded-[26px] p-6 flex flex-col gap-2 shadow-[0_8px_24px_rgba(180,72,95,0.08)]">
+<h2 class="m-0 font-hand text-[30px] font-bold leading-none">Delivering to</h2>
+<p class="m-0 text-[15px] leading-relaxed"><strong>{{ order.recipient_name }}</strong><br/>{{ order.address_line1 }}, {{ order.address_line2 }}<br/>{{ order.city }}, {{ order.state }} {{ order.pincode }}</p>
+<span class="text-[13px] text-cocoa-soft">{{ order.get_delivery_mode_display }} · receipt sent to {{ order.email }}</span>
+</section>
+{% if order.gift_note %}
+<figure class="m-0 bg-butter pt-7 px-[22px] pb-[22px] rounded-lg rotate-1 relative shadow-[0_8px_20px_rgba(74,44,38,0.08)]">
+<span aria-hidden="true" class="tape -translate-x-1/2 -rotate-3"></span>
+<blockquote class="m-0 font-hand text-[25px] leading-tight">“{{ order.gift_note }}”</blockquote>
+<figcaption class="font-extrabold text-sm mt-2">— {{ order.gift_from|default:"With love" }}</figcaption>
+</figure>
+{% endif %}
+<a class="text-sm font-extrabold" href="{{ whatsapp_url }}?text={{ 'Hi Janjé! Checking on my order '|add:order.number|urlencode }}" rel="noopener" target="_blank">Need a change? WhatsApp us →</a>
+</div>
+</div>
+</div>
+{% endblock %}
