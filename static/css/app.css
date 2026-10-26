@@ -32,7 +32,7 @@ body { background: rgb(var(--c-bg)); color: rgb(var(--c-text)); font-family: var
 .nav-link:hover, .nav-link.is-active { background: rgb(var(--c-soft)); }
 
 /* Horizontal scrollers */
-.hscroll { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.hscroll { overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .hscroll::-webkit-scrollbar { display: none; }
 .snap { scroll-snap-align: start; }
 

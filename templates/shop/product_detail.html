@@ -72,8 +72,8 @@
 <button class="js-add-to-bag btn btn-berry btn-lg flex-[1_1_180px] hide-sm" {% if not product.in_stock %}disabled{% endif %} type="submit">{% if product.in_stock %}Add to cart{% else %}Sold out{% endif %}</button>
 </div>
 <div class="flex flex-wrap gap-2.5">
-<a class="btn btn-ghost flex-1" href="{{ instagram_url }}" rel="noopener" target="_blank">{% txt "product.dm" "DM to order or customise" %}</a>
-<button aria-label="Save to wishlist" class="js-wishlist btn bg-white text-berry border-2 border-blush-line {% if product.pk in wishlist_ids %}is-wished{% endif %}" data-product-id="{{ product.pk }}" type="button"><span aria-hidden="true" class="heart">♡</span> Save</button>
+<a class="btn btn-ghost flex-[1_1_230px] text-center" href="{{ instagram_url }}" rel="noopener" target="_blank">{% txt "product.dm" "DM to order or customise" %}</a>
+<button aria-label="Save to wishlist" class="js-wishlist btn flex-auto sm:flex-none bg-white text-berry border-2 border-blush-line {% if product.pk in wishlist_ids %}is-wished{% endif %}" data-product-id="{{ product.pk }}" type="button"><span aria-hidden="true" class="heart">♡</span> Save</button>
 </div>
 
 <div class="flex flex-wrap gap-2">
@@ -91,7 +91,7 @@
 {% if related %}
 <section class="pt-16 flex flex-col gap-[18px]">
 <h2 class="m-0 font-hand text-[34px] sm:text-[44px] font-bold">{% txt "product.pairs" "Pairs well with" %}</h2>
-<div class="hscroll grid grid-flow-col auto-cols-[minmax(150px,46%)] sm:grid-flow-row sm:grid-cols-4 gap-4 pb-1.5">
+<div class="hscroll grid grid-flow-col auto-cols-[minmax(150px,46%)] sm:grid-flow-row sm:grid-cols-4 gap-4 px-1 pt-1 pb-6 -mx-1 -mb-4">
 {% for p in related %}
 <a class="lift snap bg-white rounded-[22px] p-2.5 flex flex-col gap-2 no-underline text-cocoa shadow-[0_10px_28px_rgba(180,72,95,0.10)]" href="{{ p.get_absolute_url }}">
 <img alt="{{ p.name }}" class="w-full aspect-square object-cover rounded-[14px] bg-blush" loading="lazy" src="{{ p.image_src }}"/>

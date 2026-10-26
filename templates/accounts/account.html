@@ -51,13 +51,13 @@
 </div>
 <!-- Quick Summary Stats Bento / Pills -->
 <div class="grid grid-cols-3 gap-3 md:gap-4 sm:flex sm:items-center sm:justify-end">
-<div class="flex flex-col items-center justify-center p-3.5 md:p-4 rounded-lg bg-surface-container-low/80 text-center min-w-[100px] shadow-sm hover:scale-105 transition-transform duration-200">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Keepsakes</span>
+<div class="flex flex-col items-center justify-center p-2.5 sm:p-3.5 md:p-4 rounded-lg bg-surface-container-low/80 text-center min-w-0 sm:min-w-[100px] shadow-sm hover:scale-105 transition-transform duration-200">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-normal sm:tracking-wider font-semibold">Keepsakes</span>
 <span class="font-headline-md text-headline-md text-primary font-bold mt-0.5">{{ keepsakes }}</span>
 <span class="font-body-sm text-body-sm text-on-surface-variant">Handcrafted</span>
 </div>
-<div class="flex flex-col items-center justify-center p-3.5 md:p-4 rounded-lg bg-primary-fixed/40 text-center min-w-[100px] shadow-sm hover:scale-105 transition-transform duration-200">
-<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider font-semibold">Deliveries</span>
+<div class="flex flex-col items-center justify-center p-2.5 sm:p-3.5 md:p-4 rounded-lg bg-primary-fixed/40 text-center min-w-0 sm:min-w-[100px] shadow-sm hover:scale-105 transition-transform duration-200">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-normal sm:tracking-wider font-semibold">Deliveries</span>
 <div class="flex items-center gap-1 mt-0.5">
 <span class="relative flex h-2.5 w-2.5">
 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -67,8 +67,8 @@
 </div>
 <span class="font-body-sm text-body-sm text-on-surface-variant">Active NCR</span>
 </div>
-<div class="flex flex-col items-center justify-center p-3.5 md:p-4 rounded-lg bg-secondary-fixed/50 text-center min-w-[120px] shadow-sm hover:scale-105 transition-transform duration-200">
-<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-semibold">Joy Shared</span>
+<div class="flex flex-col items-center justify-center p-2.5 sm:p-3.5 md:p-4 rounded-lg bg-secondary-fixed/50 text-center min-w-0 sm:min-w-[120px] shadow-sm hover:scale-105 transition-transform duration-200">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-normal sm:tracking-wider font-semibold">Joy Shared</span>
 <span class="font-headline-md text-headline-md text-on-secondary-fixed font-bold mt-0.5">{{ spent|rupees }}</span>
 <span class="font-body-sm text-body-sm text-secondary font-medium">{{ blossoms }} Blossoms</span>
 </div>
@@ -86,12 +86,12 @@
 <span class="font-body-sm text-body-sm text-on-surface-variant ml-1">(1 Blossom = ₹1 — redeem via our WhatsApp concierge)</span>
 </div>
 </div>
-<div class="flex items-center gap-2">
-<a class="px-4 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md transition-all flex items-center gap-1.5" href="#settings">
+<div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+<a class="flex-auto sm:flex-none justify-center whitespace-nowrap px-4 py-2.5 sm:py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md transition-all flex items-center gap-1.5" href="#settings">
 <span class="material-symbols-outlined text-[16px]">settings</span>
 <span>Edit Profile</span>
 </a>
-<a class="px-4 py-1.5 rounded-full bg-primary text-on-primary hover:bg-on-primary-container font-label-md text-label-md transition-all shadow-[0_4px_12px_rgba(164,48,115,0.25)] flex items-center gap-1" href="{% url 'shop:product_list' %}">
+<a class="flex-auto sm:flex-none justify-center whitespace-nowrap px-4 py-2.5 sm:py-1.5 rounded-full bg-primary text-on-primary hover:bg-on-primary-container font-label-md text-label-md transition-all shadow-[0_4px_12px_rgba(164,48,115,0.25)] flex items-center gap-1" href="{% url 'shop:product_list' %}">
 <span class="material-symbols-outlined text-[16px]">storefront</span>
 <span>Browse New Drops</span>
 </a>
@@ -201,8 +201,8 @@
 </div>
 <div class="flex-1 min-w-0">
 <div class="flex items-start justify-between gap-2">
-<h3 class="font-title-md text-title-md text-on-surface font-semibold truncate group-hover:text-primary transition-colors">{% if item.product %}<a href="{{ item.product.get_absolute_url }}">{{ item.name }}</a>{% else %}{{ item.name }}{% endif %}</h3>
-<span class="font-title-md text-title-md text-on-surface font-bold">{{ item.line_total|rupees }}</span>
+<h3 class="font-title-md text-title-md text-on-surface font-semibold sm:truncate group-hover:text-primary transition-colors">{% if item.product %}<a href="{{ item.product.get_absolute_url }}">{{ item.name }}</a>{% else %}{{ item.name }}{% endif %}</h3>
+<span class="font-title-md text-title-md text-on-surface font-bold flex-none">{{ item.line_total|rupees }}</span>
 </div>
 <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">{{ item.options }}</p>
 <div class="flex items-center gap-2 mt-1">
@@ -255,7 +255,7 @@
 {% endfor %}
 <!-- VIP Artisan Concierge Callout Banner -->
 <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary-fixed/50 via-primary-fixed/20 to-secondary-fixed/40 p-6 md:p-8 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
-<div class="flex items-center gap-4">
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
 <div class="w-14 h-14 rounded-full bg-primary text-on-primary flex items-center justify-center flex-shrink-0 shadow-md">
 <span class="material-symbols-outlined text-[28px]">handshake</span>
 </div>
