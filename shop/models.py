@@ -4,7 +4,9 @@ from decimal import Decimal
 from urllib.parse import quote
 
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django.core.signing import Signer
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -244,6 +246,14 @@ class Review(models.Model):
         return "★" * self.rating + "☆" * (5 - self.rating)
 
 
+def video_storage():
+    """Cloudinary keeps videos apart from images, so reels need its video storage when it's on."""
+    if getattr(settings, "CLOUDINARY_ENABLED", False):
+        from cloudinary_storage.storage import VideoMediaCloudinaryStorage
+        return VideoMediaCloudinaryStorage()
+    return default_storage
+
+
 class Reel(ImageSourceMixin, models.Model):
     title = models.CharField(max_length=120)
     tag = models.CharField(max_length=30, blank=True, help_text="Top-left pill, e.g. 'Trending Audio'")
@@ -252,7 +262,13 @@ class Reel(ImageSourceMixin, models.Model):
     likes = models.CharField(max_length=12, blank=True, help_text="e.g. 4.3k")
     image = models.ImageField(upload_to="reels/", blank=True)
     image_url = models.URLField(max_length=500, blank=True)
-    reel_url = models.URLField(blank=True, help_text="Instagram reel link")
+    video = models.FileField(
+        upload_to="reels/videos/", storage=video_storage, blank=True,
+        validators=[FileExtensionValidator(["mp4", "webm", "mov"])],
+        help_text="The reel's video (MP4). It plays silently on the home page; visitors tap for sound.",
+    )
+    video_url = models.URLField(max_length=500, blank=True, help_text="Or a direct link to an .mp4 file")
+    reel_url = models.URLField(blank=True, help_text="Instagram reel link, opened by the Instagram button")
     product = models.ForeignKey(Product, null=True, blank=True, related_name="reels", on_delete=models.SET_NULL)
     cta_label = models.CharField(max_length=20, default="Shop Now")
     is_active = models.BooleanField(default=True)
@@ -263,6 +279,10 @@ class Reel(ImageSourceMixin, models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def video_src(self):
+        return self.video.url if self.video else self.video_url
 
 
 class Coupon(models.Model):

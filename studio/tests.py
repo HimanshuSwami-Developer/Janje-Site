@@ -1,16 +1,19 @@
 import html
 import json
 import re
+import tempfile
 from decimal import Decimal
 from urllib.parse import unquote
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.files.storage import FileSystemStorage
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from shop.models import Category, Order, Product
+from shop.models import Category, Order, Product, Reel
 
 from .models import ContentBlock, PageSection, SiteSettings
 
@@ -159,6 +162,26 @@ class StudioTests(TestCase):
         session["cms_edit"] = True
         session.save()
         self.assertNotContains(self.client.get(reverse("shop:home")), "studio/editor.js")
+
+    def test_reel_video_upload(self):
+        field = Reel._meta.get_field("video")
+        original = field.storage
+        with tempfile.TemporaryDirectory() as tmp:
+            field.storage = FileSystemStorage(location=tmp, base_url="/media/")
+            try:
+                reel = Reel.objects.first()
+                data = {"title": reel.title, "image_url": reel.image_url, "cta_label": "Shop", "is_active": "on",
+                        "video": SimpleUploadedFile("daisy.mp4", b"fake-mp4", content_type="video/mp4")}
+                res = self.client.post(reverse("studio:edit", args=["reels", reel.pk]), data)
+                self.assertEqual(res.status_code, 302)
+                reel.refresh_from_db()
+                self.assertTrue(reel.video.name.startswith("reels/videos/daisy"))
+                self.assertEqual(reel.video_src, reel.video.url)
+                self.assertContains(self.client.get(reverse("studio:edit", args=["reels", reel.pk])), "<video")
+                bad = dict(data, video=SimpleUploadedFile("notes.txt", b"x", content_type="text/plain"))
+                self.assertEqual(self.client.post(reverse("studio:edit", args=["reels", reel.pk]), bad).status_code, 200)
+            finally:
+                field.storage = original
 
     def test_order_status_update(self):
         order = self._order()

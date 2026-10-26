@@ -285,4 +285,42 @@ $(function () {
       $checkout.find(".js-place-order").prop("disabled", true).text("Placing order…");
     });
   }
+
+  /* ---------------------------------------------------------------- reels */
+  // Reels play muted while on screen; tapping one turns its sound on (and mutes the rest).
+  var $reelVideos = $("[data-reel-video]");
+  if ($reelVideos.length) {
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function setSound(video, on) {
+      video.muted = !on;
+      var $card = $(video).parent();
+      var $button = $card.find("[data-reel-sound]");
+      $button.attr({ "aria-pressed": on ? "true" : "false", "aria-label": (on ? "Sound off: " : "Sound on: ") + $button.data("title") });
+      $card.find("[data-reel-icon]").text(on ? "volume_up" : "volume_off");
+    }
+
+    function play(video) {
+      var p = video.play();
+      if (p && p.catch) p.catch(function () {});
+    }
+
+    if ("IntersectionObserver" in window && !reduceMotion) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) play(entry.target);
+          else entry.target.pause();
+        });
+      }, { threshold: 0.5 });
+      $reelVideos.each(function () { observer.observe(this); });
+    }
+
+    $(document).on("click", "[data-reel-sound]", function () {
+      var video = $(this).siblings("[data-reel-video]")[0];
+      var turnOn = video.muted;
+      $reelVideos.each(function () { if (this !== video) setSound(this, false); });
+      setSound(video, turnOn);
+      if (turnOn) play(video);
+    });
+  }
 });

@@ -38,7 +38,7 @@ RESOURCES = {r.slug: r for r in [
     ),
     Resource(
         "reels", Reel, "Reels", "reel",
-        fields=["title", "image", "image_url", "reel_url", "product", "tag", "views", "likes", "cta_label", "is_active"],
+        fields=["title", "video", "video_url", "image", "image_url", "reel_url", "product", "tag", "views", "likes", "cta_label", "is_active"],
         columns=[("Product", "product"), ("Views", "views")],
         toggles=["is_active"], search=["title"], sortable=True,
     ),

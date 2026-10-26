@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from accounts.models import Address
-from shop.models import AddOn, Order, Product
+from shop.models import AddOn, Order, Product, Reel
 
 
 class BoutiqueFlowTests(TestCase):
@@ -47,6 +47,20 @@ class BoutiqueFlowTests(TestCase):
         self.assertIn("Eternal Petal Bloom Bouquet", html)
         self.assertIn("Fresh from our reels", html)
         self.assertIn("Tanya S.", html)
+
+    def test_reels_autoplay_video_with_instagram_button(self):
+        reel = Reel.objects.filter(is_active=True).first()
+        reel.video_url = "https://cdn.example.com/daisy.mp4"
+        reel.reel_url = "https://www.instagram.com/reel/abc123/"
+        reel.save()
+        html = self.client.get(reverse("shop:home")).content.decode()
+        self.assertIn('src="https://cdn.example.com/daisy.mp4"', html)
+        self.assertRegex(html, r"<video[^>]*data-reel-video[^>]*loop muted playsinline")
+        self.assertIn("data-reel-sound", html)
+        self.assertIn('href="https://www.instagram.com/reel/abc123/"', html)
+        # Reels without a video keep the photo and link to Instagram.
+        self.assertEqual(html.count("data-reel-video"), 1)
+        self.assertIn("Watch reel on Instagram", html)
 
     def test_search_filters_products(self):
         res = self.client.get(reverse("shop:product_list"), {"q": "bunny"})
