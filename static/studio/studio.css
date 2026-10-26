@@ -42,6 +42,8 @@ body.studio { margin: 0; background: var(--st-bg); color: var(--st-ink); font: 1
 .st-btn-primary:hover { background: #9c3b51; }
 .st-btn-danger { color: #b91c1c !important; }
 .st-btn-sm { min-height: 32px; padding: 0 10px; font-size: 13px; }
+.st-wa { color: #128C4A; }
+.st-wa:hover { background: #e7f8ee; }
 .st-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #f1edec; color: var(--st-muted); }
 .st-badge.ok { background: #e3f4e8; color: #166534; }
 .st-badge.warn { background: #fff4d6; color: #854d0e; }
@@ -103,3 +105,23 @@ body.studio { margin: 0; background: var(--st-bg); color: var(--st-ink); font: 1
 .st-stat { display: flex; flex-direction: column; gap: 4px; text-decoration: none; }
 .st-stat strong { font-size: 28px; font-weight: 700; }
 .st-stat span { color: var(--st-muted); font-weight: 600; font-size: 13px; }
+
+/* Reports: single-series bar chart */
+.st-bars-wrap { position: relative; padding-top: 18px; }
+.st-bars-peak { position: absolute; top: 0; left: 0; font-size: 11px; color: var(--st-muted); }
+.st-bars { display: flex; align-items: flex-end; gap: 2px; height: 220px; border-top: 1px dashed var(--st-line); border-bottom: 1px solid #cfc8c5; }
+.st-bar-col { position: relative; flex: 1 1 0; min-width: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; text-decoration: none; }
+.st-bar { display: block; width: 100%; max-width: 28px; background: var(--st-accent); border-radius: 4px 4px 0 0; }
+.st-bar-col:hover .st-bar, .st-bar-col:focus-visible .st-bar { background: #8f3549; }
+.st-bar-col.is-dim .st-bar { background: #e6b7c1; }
+.st-bar-col:focus-visible { outline: 2px solid var(--st-ink); outline-offset: 2px; border-radius: 4px; }
+.st-tip { display: none; position: absolute; bottom: calc(100% - 4px); left: 50%; transform: translateX(-50%); z-index: 5; width: max-content; max-width: 180px;
+  padding: 8px 10px; border-radius: 8px; background: var(--st-ink); color: #fff; font-size: 12px; line-height: 1.4; pointer-events: none; }
+.st-tip strong { display: block; font-size: 14px; }
+.st-bar-col:hover .st-tip, .st-bar-col:focus-visible .st-tip { display: block; }
+.st-bar-col:first-child .st-tip { left: 0; transform: none; }
+.st-bar-col:last-child .st-tip { left: auto; right: 0; transform: none; }
+.st-bars-axis { display: flex; gap: 2px; margin-top: 6px; }
+.st-bars-axis span { flex: 1 1 0; min-width: 0; font-size: 11px; color: var(--st-muted); white-space: nowrap; overflow: visible; }
+.st-share { height: 4px; margin-top: 6px; border-radius: 2px; background: #f1edec; overflow: hidden; }
+.st-share span { display: block; height: 100%; background: var(--st-accent); border-radius: 2px; }

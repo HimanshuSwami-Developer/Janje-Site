@@ -11,12 +11,13 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from shop.models import Order, Product, Review
-from shop.notify import customer_whatsapp_url
+from shop.notify import customer_whatsapp_url_for, whatsapp_action_label
 
 from .forms import (
     ColorFormSet, ContentBlockForm, ImageFormSet, OrderUpdateForm, ProductForm, SiteSettingsForm, SizeFormSet,
 )
 from .models import FONT_ROLES, WEIGHTS, ContentBlock, PageSection, SiteSettings, sections_for
+from .reports import sales_report
 from .resources import RESOURCES
 from .theme import COLORS, FONTS, google_fonts_url
 
@@ -195,6 +196,13 @@ def product_duplicate(request, pk):
     return redirect("studio:edit", slug="products", pk=copy.pk)
 
 
+# --- reports -----------------------------------------------------------------------
+
+@staff_required
+def reports(request):
+    return render(request, "studio/reports.html", sales_report(request.GET.get("period", "day"), request.GET.get("on")))
+
+
 # --- orders ------------------------------------------------------------------------
 
 @staff_required
@@ -206,8 +214,12 @@ def orders(request):
     query = request.GET.get("q", "").strip()
     if query:
         items = items.filter(Q(number__icontains=query) | Q(recipient_name__icontains=query) | Q(phone__icontains=query))
+    items = list(items.prefetch_related("items")[:200])
+    for o in items:
+        o.whatsapp_url = customer_whatsapp_url_for(request, o)
+        o.whatsapp_label = whatsapp_action_label(o)
     return render(request, "studio/orders.html", {
-        "orders": items[:200], "status": status, "query": query, "statuses": Order.STATUS_CHOICES,
+        "orders": items, "status": status, "query": query, "statuses": Order.STATUS_CHOICES,
     })
 
 
@@ -217,11 +229,12 @@ def order_detail(request, pk):
     form = OrderUpdateForm(request.POST or None, instance=order)
     if request.method == "POST" and form.is_valid():
         form.save()
-        messages.success(request, f"Updated order {order.number}.")
+        messages.success(request, f"Updated order {order.number}. Use “{whatsapp_action_label(order)}” to let the customer know.")
         return redirect("studio:order", pk=order.pk)
-    share_url = request.build_absolute_uri(order.get_share_url())
     return render(request, "studio/order_detail.html", {
-        "order": order, "form": form, "customer_whatsapp_url": customer_whatsapp_url(order, share_url),
+        "order": order, "form": form,
+        "customer_whatsapp_url": customer_whatsapp_url_for(request, order),
+        "whatsapp_label": whatsapp_action_label(order),
     })
 
 

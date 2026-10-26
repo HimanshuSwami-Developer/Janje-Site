@@ -2,6 +2,7 @@ import html
 import json
 import re
 import tempfile
+from datetime import timedelta
 from decimal import Decimal
 from urllib.parse import unquote
 
@@ -12,6 +13,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from shop.models import Category, Order, Product, Reel
 
@@ -41,7 +43,7 @@ class StudioTests(TestCase):
         product = Product.objects.first()
         order = self._order()
         urls = [
-            reverse("studio:dashboard"), reverse("studio:orders"), reverse("studio:order", args=[order.pk]),
+            reverse("studio:dashboard"), reverse("studio:orders"), reverse("studio:reports"), reverse("studio:order", args=[order.pk]),
             reverse("studio:appearance"), reverse("studio:content"), reverse("studio:layout"),
             reverse("studio:edit", args=["products", product.pk]), reverse("studio:new", args=["products"]),
         ]
@@ -182,6 +184,45 @@ class StudioTests(TestCase):
                 self.assertEqual(self.client.post(reverse("studio:edit", args=["reels", reel.pk]), bad).status_code, 200)
             finally:
                 field.storage = original
+
+    def test_whatsapp_message_follows_status(self):
+        order = self._order()
+        order.items.create(name="Eternal Petal Bloom Bouquet", options="5-Bloom Classic", unit_price=Decimal("899"))
+
+        def wa_text(url):
+            page = self.client.get(url).content.decode()
+            return unquote(html.unescape(re.search(r'href="https://wa\.me/91\d+\?text=([^"]+)"', page).group(1)))
+
+        self.assertContains(self.client.get(reverse("studio:order", args=[order.pk])), "Confirm order on WhatsApp")
+        self.assertIn("is confirmed ✓", wa_text(reverse("studio:order", args=[order.pk])))
+        self.client.post(reverse("studio:order", args=[order.pk]), {"status": "shipped", "status_note": ""})
+        self.assertIn("out for delivery", wa_text(reverse("studio:order", args=[order.pk])))
+        self.assertIn("out for delivery", wa_text(reverse("studio:orders")))
+        self.client.force_login(get_user_model().objects.create_superuser("boss", "boss@example.com", "pink-bows-2026"))
+        admin_page = self.client.get(reverse("admin:shop_order_changelist"))
+        self.assertContains(admin_page, "Send “Out for delivery” update")
+
+    def test_sales_report(self):
+        today = timezone.now()
+        product = Product.objects.first()
+        for status, total, days_ago in [("placed", "500", 0), ("delivered", "300", 2), ("cancelled", "999", 0), ("placed", "200", 40)]:
+            order = self._order()
+            Order.objects.filter(pk=order.pk).update(status=status, total=Decimal(total), created_at=today - timedelta(days=days_ago))
+            order.items.create(product=product, name=product.name, unit_price=Decimal(total), quantity=2)
+        res = self.client.get(reverse("studio:reports"))
+        self.assertEqual(res.status_code, 200)
+        totals = res.context["totals"]
+        self.assertEqual((totals["sales"], totals["orders"], totals["items"]), (Decimal("800"), 2, 4))
+        self.assertEqual(len(res.context["rows"]), 30)
+        self.assertEqual(res.context["products"][0]["qty"], 4)
+        today_iso = timezone.localdate().isoformat()
+        one_day = self.client.get(reverse("studio:reports") + f"?period=day&on={today_iso}")
+        self.assertEqual(one_day.context["products"][0]["revenue"], Decimal("1000"))
+        month = self.client.get(reverse("studio:reports") + "?period=month").context
+        self.assertEqual((month["totals"]["orders"], len(month["rows"])), (3, 12))
+        week = self.client.get(reverse("studio:reports") + "?period=week").context
+        self.assertEqual(len(week["rows"]), 12)
+        self.assertEqual(week["rows"][-1]["start"].weekday(), 0)
 
     def test_order_status_update(self):
         order = self._order()

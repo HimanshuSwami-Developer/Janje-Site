@@ -14,32 +14,70 @@ def _item_lines(order):
     )
 
 
-def order_whatsapp_text(order, share_url):
-    eta = order.estimated_delivery
-    lines = _item_lines(order)
+# Opening line of the customer message for each order status.
+STATUS_HEADLINES = {
+    "placed": "Your Janjé order *#{number}* is confirmed ✓ Thank you!",
+    "crafting": "Our artisans have started handcrafting your order *#{number}* 🌸",
+    "packing": "Your order *#{number}* is being wrapped in keepsake packaging 🎁",
+    "shipped": "Your order *#{number}* is out for delivery 🚚",
+    "delivered": "Your order *#{number}* has been delivered ♡ We hope you love it!",
+    "cancelled": "Your order *#{number}* has been cancelled.",
+}
+
+WHATSAPP_ACTIONS = {
+    "placed": "Confirm order on WhatsApp",
+    "crafting": "Send “Handcrafting” update",
+    "packing": "Send “Packaging” update",
+    "shipped": "Send “Out for delivery” update",
+    "delivered": "Send “Delivered” message",
+    "cancelled": "Send cancellation message",
+}
+
+
+def _payment_line(order):
     if order.is_paid:
-        payment = f"Payment of {rupees(order.total)} received, thank you ✓\nTrack your order here:"
-    elif order.payment_method == "cod":
-        payment = f"Please keep {rupees(order.total)} ready to pay in cash on delivery.\nTrack your order here:"
+        return f"Payment of {rupees(order.total)} received, thank you ✓\nTrack your order here:"
+    if order.payment_method == "cod":
+        return f"Please keep {rupees(order.total)} ready to pay in cash on delivery.\nTrack your order here:"
+    payment = f"Total to pay: *{rupees(order.total)}* by UPI"
+    if settings.JANJE["UPI_ID"]:
+        payment += f" to *{settings.JANJE['UPI_ID']}* (add {order.number} in the note)"
+    return payment + ".\nScan the QR or tap “Pay with a UPI app” here:"
+
+
+def order_whatsapp_text(order, share_url):
+    """The message the shop sends the customer, worded for the order's current status."""
+    eta = order.estimated_delivery
+    headline = STATUS_HEADLINES.get(order.status, STATUS_HEADLINES["placed"]).format(number=order.number)
+    parts = [f"Hi {order.gift_from or order.recipient_name} ♡\n{headline}"]
+    if order.status == "placed":
+        parts.append(_item_lines(order))
+    if order.status_note and order.is_active_order:
+        parts.append(order.status_note)
+    if order.status == "cancelled":
+        parts.append(f"If you've already paid, your refund of {rupees(order.total)} is on its way. "
+                     f"Questions? Just reply here.\n{share_url}" if order.is_paid
+                     else f"Questions? Just reply here.\n{share_url}")
+    elif order.status == "delivered":
+        parts.append(f"We'd love a photo or a review ♡\n{share_url}")
     else:
-        payment = f"Total to pay: *{rupees(order.total)}* by UPI"
-        if settings.JANJE["UPI_ID"]:
-            payment += f" to *{settings.JANJE['UPI_ID']}* (add {order.number} in the note)"
-        payment += ".\nScan the QR or tap “Pay with a UPI app” here:"
-    return (
-        f"Hi {order.gift_from or order.recipient_name} ♡\n"
-        f"Thank you for your Janjé order *#{order.number}*!\n\n"
-        f"{lines}\n\n"
-        f"{payment}\n{share_url}\n\n"
-        f"Status: {order.get_status_display()}"
-        + (f" · arriving by {eta:%a}, {eta.day} {eta:%b}" if order.is_active_order else "")
-        + "\nHandcrafted with love, Janjé 🎀"
-    )
+        parts.append(f"{_payment_line(order)}\n{share_url}")
+        if order.is_active_order:
+            parts.append(f"Arriving by {eta:%a}, {eta.day} {eta:%b}")
+    return "\n\n".join(parts) + "\nHandcrafted with love, Janjé 🎀"
+
+
+def whatsapp_action_label(order):
+    return WHATSAPP_ACTIONS.get(order.status, "Send on WhatsApp")
 
 
 def customer_whatsapp_url(order, share_url):
     """wa.me link that opens a chat with the customer, message pre-filled."""
     return f"https://wa.me/91{order.phone}?text={quote(order_whatsapp_text(order, share_url))}"
+
+
+def customer_whatsapp_url_for(request, order):
+    return customer_whatsapp_url(order, request.build_absolute_uri(order.get_share_url()))
 
 
 def shop_whatsapp_url(order, share_url):

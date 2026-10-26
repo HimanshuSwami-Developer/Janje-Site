@@ -1,0 +1,91 @@
+{% extends "studio/base.html" %}{% load shop_tags %}
+{% block title %}Reports{% endblock %}
+{% block heading %}Sales reports{% endblock %}
+{% block actions %}
+<nav aria-label="Report period" class="st-chips">
+{% for key, label in periods %}<a class="st-chip {% if period == key %}is-on{% endif %}" href="?period={{ key }}">{{ label }}</a>{% endfor %}
+</nav>
+{% endblock %}
+{% block content %}
+<p class="m-0 mb-4 text-sm text-stone-600">{{ period_label }} · {{ range_label }} · cancelled orders not counted</p>
+
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-5">
+<div class="st-card st-stat"><strong>{{ totals.sales|rupees|default:"₹0" }}</strong><span>Sales</span></div>
+<div class="st-card st-stat"><strong>{{ totals.orders }}</strong><span>Orders</span></div>
+<div class="st-card st-stat"><strong>{{ totals.items }}</strong><span>Items sold</span></div>
+<div class="st-card st-stat"><strong>{{ totals.average|rupees|default:"₹0" }}</strong><span>Average order</span></div>
+<div class="st-card st-stat"><strong>{{ totals.paid|rupees|default:"₹0" }}</strong><span>Paid so far</span></div>
+</div>
+
+<section class="st-card mb-5">
+<div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+<h2 class="!m-0">Sales by {{ period }}</h2>
+<span class="text-xs text-stone-500">Tap a bar to see what sold that {{ period }}</span>
+</div>
+{% if totals.orders %}
+<div class="st-bars-wrap">
+<span class="st-bars-peak">{{ peak|rupees }}</span>
+<div aria-label="Sales by {{ period }}, {{ range_label }}" class="st-bars" role="img">
+{% for r in rows %}
+<a aria-label="{{ r.label }}: {{ r.sales|rupees|default:'₹0' }}, {{ r.orders }} order{{ r.orders|pluralize }}" class="st-bar-col {% if selected and selected.start == r.start %}is-on{% elif selected %}is-dim{% endif %}" href="?period={{ period }}&amp;on={{ r.start|date:'Y-m-d' }}#products">
+<span class="st-bar" style="height: {% if r.sales %}max({{ r.height }}%, 3px){% else %}0{% endif %}"></span>
+<span class="st-tip"><strong>{{ r.sales|rupees|default:"₹0" }}</strong>{{ r.label }}<br/>{{ r.orders }} order{{ r.orders|pluralize }} · {{ r.items }} item{{ r.items|pluralize }}</span>
+</a>
+{% endfor %}
+</div>
+<div aria-hidden="true" class="st-bars-axis">
+{% for r in rows %}<span>{% if r.show_label %}{{ r.short }}{% endif %}</span>{% endfor %}
+</div>
+</div>
+{% else %}
+<p class="m-0 py-10 text-center text-stone-500">No orders in this period yet.</p>
+{% endif %}
+</section>
+
+<div class="grid lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] gap-5 items-start">
+<section class="st-card" id="products">
+<div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+<h2 class="!m-0">Product sales{% if selected %} · {{ selected.label }}{% endif %}</h2>
+{% if selected %}<a class="st-btn st-btn-sm" href="?period={{ period }}#products">Show whole period</a>{% endif %}
+</div>
+<div class="st-scroll">
+<table class="st-table">
+<thead><tr><th>Product</th><th class="text-right">Units</th><th class="text-right">Orders</th><th class="text-right">Revenue*</th></tr></thead>
+<tbody>
+{% for p in products %}
+<tr>
+<td><span class="font-semibold">{{ p.name }}</span>{% if p.is_addon %} <span class="st-badge">Add-on</span>{% endif %}
+<div aria-hidden="true" class="st-share"><span style="width: {{ p.share }}%"></span></div></td>
+<td class="text-right">{{ p.qty }}</td>
+<td class="text-right">{{ p.orders }}</td>
+<td class="text-right font-semibold whitespace-nowrap">{{ p.revenue|rupees }}</td>
+</tr>
+{% empty %}
+<tr><td class="text-stone-500 !py-8 text-center" colspan="4">Nothing sold{% if selected %} on this {{ period }}{% else %} in this period{% endif %}.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+<p class="m-0 mt-3 text-xs text-stone-500">*Price × units, before coupons and UPI discounts. Sales above are what customers actually pay.</p>
+</section>
+
+<section class="st-card">
+<h2>{{ period_label }} breakdown</h2>
+<div class="st-scroll">
+<table class="st-table">
+<thead><tr><th>{{ period|capfirst }}</th><th class="text-right">Orders</th><th class="text-right">Items</th><th class="text-right">Sales</th></tr></thead>
+<tbody>
+{% for r in rows reversed %}
+<tr{% if not r.orders %} class="text-stone-400"{% endif %}>
+<td class="whitespace-nowrap"><a href="?period={{ period }}&amp;on={{ r.start|date:'Y-m-d' }}#products">{{ r.label }}</a></td>
+<td class="text-right">{{ r.orders }}</td>
+<td class="text-right">{{ r.items }}</td>
+<td class="text-right font-semibold whitespace-nowrap">{{ r.sales|rupees|default:"₹0" }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</section>
+</div>
+{% endblock %}

@@ -21,6 +21,7 @@
 <p class="st-nav-h">Shop</p>
 <a class="{% if request.path == u_dash %}is-on{% endif %}" href="{{ u_dash }}">Overview</a>
 <a class="{% if '/studio/orders/' in request.path %}is-on{% endif %}" href="{{ u_orders }}">Orders</a>
+<a class="{% if '/studio/reports/' in request.path %}is-on{% endif %}" href="{% url 'studio:reports' %}">Reports</a>
 {% for slug, label in studio_nav %}<a class="{% if res.slug == slug %}is-on{% endif %}" href="{% url 'studio:list' slug %}">{{ label }}</a>{% endfor %}
 <p class="st-nav-h">Website</p>
 <a href="{% url 'studio:edit_mode' %}?on=1&amp;next=/">Edit site live ↗</a>

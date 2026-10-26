@@ -3,7 +3,7 @@
 {% block crumbs %}<p class="st-crumbs m-0"><a href="{% url 'studio:orders' %}">Orders</a> /</p>{% endblock %}
 {% block heading %}Order {{ order.number }}{% endblock %}
 {% block actions %}
-<a class="st-btn st-btn-primary" href="{{ customer_whatsapp_url }}" rel="noopener" target="_blank" title="Opens WhatsApp with the order, items, total and pay link filled in">Send order on WhatsApp</a>
+<a class="st-btn st-btn-primary" href="{{ customer_whatsapp_url }}" rel="noopener" target="_blank" title="Opens WhatsApp to the customer with the message filled in, ready to send">{{ whatsapp_label }}</a>
 <a class="st-btn" href="{{ order.get_absolute_url }}" rel="noopener" target="_blank">Customer’s page ↗</a>
 {% endblock %}
 {% block content %}
@@ -50,7 +50,7 @@
 <p class="m-0 text-sm text-stone-600">Placed {{ order.created_at|date:"j M Y, g:i A" }} · {{ order.get_payment_method_display }}{% if order.upi_id %} from {{ order.upi_id }}{% endif %}</p>
 {% for field in form %}{% include "studio/_field.html" %}{% endfor %}
 <button class="st-btn st-btn-primary" type="submit">Save changes</button>
-<p class="m-0 text-xs text-stone-500">The customer sees the new status on their order page and in their account.</p>
+<p class="m-0 text-xs text-stone-500">The customer sees the new status on their order page and in their account. After saving, tap the WhatsApp button at the top to message them.</p>
 </form>
 </div>
 {% endblock %}

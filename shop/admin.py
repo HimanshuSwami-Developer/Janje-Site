@@ -5,6 +5,7 @@ from .models import (
     AddOn, Category, Coupon, NewsletterSubscriber, Order, OrderItem, Product, ProductColor, ProductImage,
     ProductSize, Reel, Review,
 )
+from .notify import customer_whatsapp_url_for, whatsapp_action_label
 
 
 def thumb(obj, size=48):
@@ -105,7 +106,8 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ["number", "created_at", "recipient_name", "phone", "city", "total", "payment_method", "is_paid", "status"]
+    list_display = ["number", "created_at", "recipient_name", "phone", "city", "total", "payment_method", "is_paid", "status",
+                    "whatsapp"]
     list_editable = ["is_paid", "status"]
     list_filter = ["status", "is_paid", "payment_method", "delivery_mode", "created_at"]
     search_fields = ["number", "recipient_name", "email", "phone", "pincode"]
@@ -122,6 +124,21 @@ class OrderAdmin(admin.ModelAdmin):
         ("Totals", {"fields": ["subtotal", "coupon_code", "coupon_discount", "prepaid_discount", "shipping_fee",
                                "cod_fee", "total"]}),
     ]
+
+    # The WhatsApp link needs the site's address, so keep the request from the list view.
+    def changelist_view(self, request, extra_context=None):
+        self._request = request
+        return super().changelist_view(request, extra_context)
+
+    @admin.display(description="WhatsApp")
+    def whatsapp(self, obj):
+        request = getattr(self, "_request", None)
+        if not request:
+            return "—"
+        return format_html(
+            '<a href="{}" target="_blank" rel="noopener" style="white-space:nowrap">{}</a>',
+            customer_whatsapp_url_for(request, obj), whatsapp_action_label(obj),
+        )
 
 
 @admin.register(NewsletterSubscriber)

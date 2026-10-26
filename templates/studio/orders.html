@@ -15,7 +15,7 @@
 </div>
 <div class="st-card !p-0 st-scroll">
 <table class="st-table">
-<thead><tr><th>Order</th><th>Placed</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead>
+<thead><tr><th>Order</th><th>Placed</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th><span class="sr-only">WhatsApp</span></th></tr></thead>
 <tbody>
 {% for o in orders %}
 <tr>
@@ -26,9 +26,10 @@
 <td class="font-semibold">{{ o.total|rupees }}</td>
 <td>{% if o.is_paid %}<span class="st-badge ok">Paid</span>{% elif o.payment_method == "cod" %}<span class="st-badge">Cash on delivery</span>{% else %}<span class="st-badge warn">Awaiting UPI</span>{% endif %}</td>
 <td><span class="st-badge pink">{{ o.get_status_display }}</span></td>
+<td><a aria-label="{{ o.whatsapp_label }} to {{ o.recipient_name }}" class="st-btn st-btn-sm st-wa" href="{{ o.whatsapp_url }}" rel="noopener" target="_blank" title="{{ o.whatsapp_label }}"><svg aria-hidden="true" fill="currentColor" height="16" viewBox="0 0 24 24" width="16"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2l-.4-.2z"/></svg></a></td>
 </tr>
 {% empty %}
-<tr><td class="text-stone-500 !py-8 text-center" colspan="7">No orders match.</td></tr>
+<tr><td class="text-stone-500 !py-8 text-center" colspan="8">No orders match.</td></tr>
 {% endfor %}
 </tbody>
 </table>
